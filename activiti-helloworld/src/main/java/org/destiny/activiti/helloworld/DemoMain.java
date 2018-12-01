@@ -29,7 +29,7 @@ import java.util.Scanner;
  * destinywk@163.com
  * ------------------------------------------------------------------
  * <p>
- *     启动类
+ * 启动类
  * </p>
  * ------------------------------------------------------------------
  * design by 2018/12/1 16:48
@@ -60,8 +60,9 @@ public class DemoMain {
 
     /**
      * 处理流程任务
-     * @param processEngine
-     * @param processInstance
+     *
+     * @param processEngine   流程引擎
+     * @param processInstance 流程实例
      * @throws ParseException
      */
     private static void processTask(ProcessEngine processEngine, ProcessInstance processInstance) throws ParseException {
@@ -80,7 +81,7 @@ public class DemoMain {
                         .createProcessInstanceQuery()
                         .processInstanceId(processInstance.getId())
                         .singleResult();
-//                logger.info("当前 ProcessInstance :{}", JSON.toJSONString(processInstance));
+                logger.info("当前 ProcessInstance :{}", processInstance);
             }
         }
         scanner.close();
@@ -88,6 +89,7 @@ public class DemoMain {
 
     /**
      * 获取变量
+     *
      * @param processEngine
      * @param scanner
      * @param task
@@ -148,7 +150,9 @@ public class DemoMain {
     }
 
     private static ProcessEngine getProcessEngine() {
-        ProcessEngineConfiguration configuration = ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration();
+        // 创建基于内存的独立的 ProcessEngineConfiguration 对象
+        ProcessEngineConfiguration configuration =
+                ProcessEngineConfiguration.createStandaloneInMemProcessEngineConfiguration();
         ProcessEngine processEngine = configuration.buildProcessEngine();
         String name = processEngine.getName();
         String version = ProcessEngine.VERSION;
