@@ -3,4 +3,6 @@
 */*.eml
 */*.iml
 
-*/target
+target
+
+bin
