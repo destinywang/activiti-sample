@@ -26,13 +26,23 @@ import static org.junit.Assert.assertNotNull;
 public class ConfigMDCTest {
 
     @Rule
-    public ActivitiRule activitiRule = new ActivitiRule();
+    public ActivitiRule activitiRule = new ActivitiRule("activiti_mdc.cfg.xml");
 
     @Test
-    @Deployment(resources = {"my-process.bpmn20.xml"})
+    @Deployment(resources = {"my-process-error.bpmn20.xml"})
     public void test() {
         // 开启 MDC, 整个过程在正常情况下是不会激活 MDC 的
         LogMDC.setMDCEnabled(true);
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+        assertNotNull(processInstance);
+        Task task = activitiRule.getTaskService().createTaskQuery().singleResult();
+        assertEquals("Activiti is awesome!", task.getName());
+        activitiRule.getTaskService().complete(task.getId());
+    }
+
+    @Test
+    @Deployment(resources = {"my-process.bpmn20.xml"})
+    public void test2() {
         ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
         assertNotNull(processInstance);
         Task task = activitiRule.getTaskService().createTaskQuery().singleResult();
