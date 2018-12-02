@@ -1,0 +1,19 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- 配置 ProcessEngineConfiguration  -->
+    <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
+        <property name="databaseSchemaUpdate" value="true"/>
+        <property name="commandInvoker" ref="commandInvoker"/>
+        <!-- 是否设置树形日志, 默认为 true -->
+        <property name="enableVerboseExecutionTreeLogging" value="true"/>
+
+        <property name="customPreCommandInterceptors">
+            <list>
+                <bean class="org.destiny.activiti.interceptor.DurationCommandInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="commandInvoker" class="org.destiny.activiti.interceptor.MDCCommandInvoker"/>
+</beans>
