@@ -162,4 +162,24 @@ public class RuntimeServiceTest {
                 .singleResult();
         log.info("execution: {}", execution);
     }
+
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-message.bpmn20.xml"})
+    public void testMessageEventReceived() {
+        RuntimeService runtimeService = activitiRule.getRuntimeService();
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("my-process");
+        // 查询数据库是否有一个正在等待信号的节点
+        Execution execution = runtimeService.createExecutionQuery()
+                .messageEventSubscriptionName("my-message")   // 查询订阅了该信号的执行流
+                .singleResult();
+        log.info("execution: {}", execution);
+        // 触发消息, 不同于信号的触发, message 在触发时需要指定 executionId
+        runtimeService.messageEventReceived("my-message", execution.getId());
+
+        // 重新执行查询
+        execution = runtimeService.createExecutionQuery()
+                .messageEventSubscriptionName("my-message")
+                .singleResult();
+        log.info("execution: {}", execution);
+    }
 }
