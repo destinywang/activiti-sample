@@ -123,6 +123,43 @@ public class RuntimeServiceTest {
         for (Execution execution : executionList) {
             log.info("execution: {}", execution);
         }
+    }
 
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-trigger.bpmn20.xml"})
+    public void testTrigger() {
+        RuntimeService runtimeService = activitiRule.getRuntimeService();
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("my-process");
+        // 开始流程后流程实例就会在 receiveTask 节点等待处理
+        Execution execution = runtimeService.createExecutionQuery()
+                .activityId("someTask")
+                .singleResult();
+        log.info("execution: {}", execution);
+        runtimeService.trigger(execution.getId());
+        // 再次查询
+        execution = runtimeService.createExecutionQuery()
+                .activityId("someTask")
+                .singleResult();
+        log.info("execution: {}", execution);
+    }
+
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-signal.bpmn20.xml"})
+    public void testSignalEventReceived() {
+        RuntimeService runtimeService = activitiRule.getRuntimeService();
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("my-process");
+        // 查询数据库是否有一个正在等待信号的节点
+        Execution execution = runtimeService.createExecutionQuery()
+                .signalEventSubscriptionName("my-signal")   // 查询订阅了该信号的执行流
+                .singleResult();
+        log.info("execution: {}", execution);
+        // 触发信号
+        runtimeService.signalEventReceived("my-signal");
+
+        // 重新执行查询
+        execution = runtimeService.createExecutionQuery()
+                .signalEventSubscriptionName("my-signal")
+                .singleResult();
+        log.info("execution: {}", execution);
     }
 }
