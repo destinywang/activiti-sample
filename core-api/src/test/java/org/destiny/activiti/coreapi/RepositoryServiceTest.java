@@ -4,6 +4,7 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.test.ActivitiRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,6 +72,9 @@ public class RepositoryServiceTest {
 
     }
 
+    /**
+     * 测试流程定义的暂停/挂起
+     */
     @Test
     @org.activiti.engine.test.Deployment(resources = "org/destiny/activiti/my-process.bpmn20.xml")
     public void testSuspend() {
@@ -93,5 +97,36 @@ public class RepositoryServiceTest {
         logger.info("激活后开始启动");
         activitiRule.getRuntimeService().startProcessInstanceById(processDefinitionId);
         logger.info("激活后启动成功");
+    }
+
+    /**
+     * 用户/用户组绑定
+     * repositoryService 只提供了构建关系的方式, 具体的校验逻辑需要自己完成
+     * 可以取出用户/用户组信息, 自行通过逻辑判断
+     */
+    @Test
+    @org.activiti.engine.test.Deployment(resources = "org/destiny/activiti/my-process.bpmn20.xml")
+    public void testCandidateStarter() {
+        RepositoryService repositoryService = activitiRule.getRepositoryService();
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().singleResult();
+        String processDefinitionId = processDefinition.getId();
+        logger.info("processDefinitionId: {}", processDefinitionId);
+
+        // userId/groupM 是对应的用户/用户组管理服务中创建的 id
+        repositoryService.addCandidateStarterUser(processDefinitionId, "user");
+        repositoryService.addCandidateStarterGroup(processDefinitionId, "groupM");
+
+        List<IdentityLink> identityLinkList = repositoryService.getIdentityLinksForProcessDefinition(processDefinitionId);
+        for (IdentityLink identityLink : identityLinkList) {
+            logger.info("删除前: identityLink: [{}]", identityLink);
+        }
+
+        repositoryService.deleteCandidateStarterGroup(processDefinitionId, "groupM");
+        repositoryService.deleteCandidateStarterUser(processDefinitionId, "user");
+
+        List<IdentityLink> identityLinkList1 = repositoryService.getIdentityLinksForProcessDefinition(processDefinitionId);
+        for (IdentityLink identityLink : identityLinkList1) {
+            logger.info("删除后: identityLink: [{}]", identityLink);
+        }
     }
 }
