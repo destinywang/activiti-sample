@@ -4,8 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.task.IdentityLink;
-import org.activiti.engine.task.Task;
+import org.activiti.engine.task.*;
 import org.activiti.engine.test.ActivitiRule;
 import org.activiti.engine.test.Deployment;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -106,5 +105,49 @@ public class TaskServiceTest {
         log.info("是否存在: {}", !CollectionUtils.isEmpty(destinys));
     }
 
+
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-task.bpmn20.xml"})
+    public void testTaskAttachment() {
+        Map<String, Object> variables = Maps.newHashMap();
+        variables.put("message", "my test message");
+        activitiRule.getRuntimeService().startProcessInstanceByKey("my-process", variables);
+        TaskService taskService = activitiRule.getTaskService();
+        Task task = taskService.createTaskQuery().singleResult();
+        // 可以上传数据流或 url
+        Attachment attachment = taskService.createAttachment("url", task.getId(), task.getProcessInstanceId(), "name", "desc", "/url/test.png");
+        log.info("attachment: {}", attachment);
+        List<Attachment> taskAttachments = taskService.getTaskAttachments(task.getId());
+        for (Attachment taskAttachment : taskAttachments) {
+            log.info("taskAttachment: {}", ToStringBuilder.reflectionToString(taskAttachment, ToStringStyle.JSON_STYLE));
+        }
+    }
+
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-task.bpmn20.xml"})
+    public void testTaskComment() {
+        Map<String, Object> variables = Maps.newHashMap();
+        variables.put("message", "my test message");
+        activitiRule.getRuntimeService().startProcessInstanceByKey("my-process", variables);
+        TaskService taskService = activitiRule.getTaskService();
+        Task task = taskService.createTaskQuery().singleResult();
+        // 添加评论
+        taskService.addComment(task.getId(), task.getProcessInstanceId(), "record note1");
+        taskService.addComment(task.getId(), task.getProcessInstanceId(), "record note2");
+        taskService.setOwner(task.getId(), "destiny");
+        taskService.setAssignee(task.getId(), "destiny");
+
+        List<Comment> taskComments = taskService.getTaskComments(task.getId());
+        for (Comment taskComment : taskComments) {
+            log.info("taskComment: {}", ToStringBuilder.reflectionToString(taskComment, ToStringStyle.JSON_STYLE));
+        }
+
+        // 事件记录
+        List<Event> taskEvents = taskService.getTaskEvents(task.getId());
+        for (Event taskEvent : taskEvents) {
+            log.info("taskEvent: {}", ToStringBuilder.reflectionToString(taskEvent, ToStringStyle.JSON_STYLE));
+        }
+
+    }
 
 }
