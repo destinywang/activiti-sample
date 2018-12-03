@@ -182,4 +182,16 @@ public class RuntimeServiceTest {
                 .singleResult();
         log.info("execution: {}", execution);
     }
+
+    /**
+     * 基于 message 启动一个节点
+     */
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-message-start.bpmn20.xml"})
+    public void testMessageStart() {
+        RuntimeService runtimeService = activitiRule.getRuntimeService();
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByMessage("my-message");
+
+        log.info("processInstance: {}", processInstance);
+    }
 }
