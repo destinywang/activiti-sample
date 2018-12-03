@@ -6,17 +6,21 @@
              xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
              xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
              expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
-
     <process id="my-process">
-
-        <startEvent id="start"/>
+        <startEvent id="start" activiti:formKey="/rest/process/form/start">
+            <!-- 配置表单项 -->
+            <extensionElements>
+                <activiti:formProperty id="message" name="信息" type="string" required="true"/>
+            </extensionElements>
+        </startEvent>
         <sequenceFlow id="flow1" sourceRef="start" targetRef="someTask"/>
-
-        <userTask id="someTask" name="Activiti is awesome!"/>
+        <userTask id="someTask" name="Activiti is awesome!" activiti:formKey="/rest/process/form/userTask">
+            <extensionElements>
+                <!-- 配置表单项 -->
+                <activiti:formProperty id="yesOrNo" name="审批" type="string" required="true"/>
+            </extensionElements>
+        </userTask>
         <sequenceFlow id="flow2" sourceRef="someTask" targetRef="end"/>
-
         <endEvent id="end"/>
-
     </process>
-
 </definitions>

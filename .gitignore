@@ -1,8 +1,10 @@
 .idea
 
-*/*.eml
-*/*.iml
+*.eml
+*.iml
 
 target
 
 bin
+
+.settings
