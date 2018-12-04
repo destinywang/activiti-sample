@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 public class JobEventListener implements ActivitiEventListener {
 
     public static final Logger logger = LoggerFactory.getLogger(JobEventListener.class);
-    @Override
 
+    @Override
     public void onEvent(ActivitiEvent event) {
         ActivitiEventType eventType = event.getType();
         String name = eventType.name();
