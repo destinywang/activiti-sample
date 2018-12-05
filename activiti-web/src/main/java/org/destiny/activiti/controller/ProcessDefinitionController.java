@@ -1,5 +1,6 @@
 package org.destiny.activiti.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Lists;
@@ -14,24 +15,25 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.destiny.activiti.model.ActivitiModel;
 import org.destiny.activiti.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/processDef")
+@RequestMapping("/flow")
 @Api(
         value = "/processDef",
         description = "流程定义"
@@ -107,6 +109,24 @@ public class ProcessDefinitionController {
     }
 
     /**
+     * 流程模型定义列表展示
+     * @param request
+     * @return
+     */
+    @PostMapping(value = "/defList", produces = "application/json;charset=utf-8")
+    @ApiOperation(value = "查询流程定义列表", response = Result.class)
+    public Result defList(HttpServletRequest request) {
+        List<Deployment> deploymentList = repositoryService.createDeploymentQuery().list();
+        String string = ToStringBuilder.reflectionToString(deploymentList, ToStringStyle.JSON_STYLE);
+        log.info("deploymentList: {}", string);
+        if (!CollectionUtils.isEmpty(deploymentList)) {
+            return Result.genSuccess(string);
+        } else {
+            return Result.genFail(500, "流程定义文件为空");
+        }
+    }
+
+    /**
      * 根据模型 id 部署流程定义
      * 与流程定义相关的有三张表:
      *      - ACT_GE_BYTEARRAY
@@ -135,5 +155,29 @@ public class ProcessDefinitionController {
         } else {
             return Result.genFail(500, "deployment 对象为空");
         }
+    }
+
+    @PostMapping("/deployProcessSubmit")
+    public String deployProcessSubmit(@RequestParam(value = "bpmnResource") MultipartFile bpmnResource,
+                                      @RequestParam(value = "pngResource") MultipartFile pngResource,
+                                      @RequestParam(value = "key") String key,
+                                      @RequestParam(value = "category") String category) throws IOException {
+        // 获取上传的文件
+        String bpmnResourceOriginalFilename = bpmnResource.getOriginalFilename();
+        InputStream bpmnResourceInputStream = bpmnResource.getInputStream();
+        String pngResourceOriginalFilename = pngResource.getOriginalFilename();
+        InputStream pngResourceInputStream = pngResource.getInputStream();
+
+        Deployment deployment = repositoryService.createDeployment()
+                .addInputStream(bpmnResourceOriginalFilename, bpmnResourceInputStream)
+                .addInputStream(pngResourceOriginalFilename, pngResourceInputStream)
+                .key(key)
+                .category(category)
+                .deploy();
+
+        String deploymentJSON = ToStringBuilder.reflectionToString(deployment, ToStringStyle.JSON_STYLE);
+        log.info("deployment: {}", deploymentJSON);
+
+        return deploymentJSON;
     }
 }
