@@ -7,7 +7,7 @@
 
     <context:annotation-config/>
     <mvc:annotation-driven/>
-    <context:component-scan base-package="controllers"/>
+    <context:component-scan base-package="org.destiny"/>
 
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
@@ -36,4 +36,8 @@
     <bean id="historyService" factory-bean="processEngineFactoryBean" factory-method="getHistoryService"/>
     <bean id="formService" factory-bean="processEngineFactoryBean" factory-method="getFormService"/>
 
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB/INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 </beans>
