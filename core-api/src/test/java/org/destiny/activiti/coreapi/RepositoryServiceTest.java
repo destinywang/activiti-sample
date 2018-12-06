@@ -1,16 +1,24 @@
 package org.destiny.activiti.coreapi;
 
+import org.activiti.bpmn.model.*;
+import org.activiti.bpmn.model.Process;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -128,5 +136,83 @@ public class RepositoryServiceTest {
         for (IdentityLink identityLink : identityLinkList1) {
             logger.info("删除后: identityLink: [{}]", identityLink);
         }
+    }
+
+    @Test
+    public void testDynamicDeploy() throws IOException {
+        // 1. Build up the model from scratch
+        BpmnModel model = new BpmnModel();
+        Process process = new Process();
+        model.addProcess(process);
+        process.setId("my-process1");
+
+        process.addFlowElement(createStartEvent());
+        process.addFlowElement(createUserTask("task1", "First task", "fred"));
+        process.addFlowElement(createUserTask("task2", "Second task", "john"));
+        process.addFlowElement(createEndEvent());
+
+        process.addFlowElement(createSequenceFlow("start", "task1"));
+        process.addFlowElement(createSequenceFlow("task1", "task2"));
+        process.addFlowElement(createSequenceFlow("task2", "end"));
+
+        // 2. Generate graphical information
+//        new BpmnAutoLayout(model).execute();
+
+        // 3. Deploy the process to the engine
+        Deployment deployment = activitiRule.getRepositoryService()
+                .createDeployment()
+                .addBpmnModel("dynamic-model.bpmn", model)
+                .name("Dynamic process deployment")
+                .deploy();
+
+        // 4. Start a process instance
+        ProcessInstance processInstance = activitiRule.getRuntimeService()
+                .startProcessInstanceByKey("my-process1");
+
+        // 5. Check if task is available
+        List<Task> tasks = activitiRule.getTaskService()
+                .createTaskQuery()
+                .processInstanceId(processInstance.getId())
+                .list();
+
+//        Assert.assertEquals(1, tasks.size());
+//        Assert.assertEquals("First task", tasks.get(0).getName());
+//        Assert.assertEquals("fred", tasks.get(0).getAssignee());
+
+        // 6. Save process diagram to a file
+//        InputStream processDiagram = activitiRule.getRepositoryService().getProcessDiagram(processInstance.getProcessDefinitionId());
+
+//        FileUtils.copyInputStreamToFile(processDiagram, new File("target/diagram.png"));
+
+        // 7. Save resulting BPMN xml to a file
+        InputStream processBpmn = activitiRule.getRepositoryService().getResourceAsStream(deployment.getId(), "dynamic-model.bpmn");
+        FileUtils.copyInputStreamToFile(processBpmn, new File("target/process.bpmn20.xml"));
+    }
+
+    private StartEvent createStartEvent() {
+        StartEvent startEvent = new StartEvent();
+        startEvent.setId("start");
+        return startEvent;
+    }
+
+    private UserTask createUserTask(String id, String name, String assignee) {
+        UserTask userTask = new UserTask();
+        userTask.setId(id);
+        userTask.setName(name);
+        userTask.setAssignee(assignee);
+        return userTask;
+    }
+
+    private EndEvent createEndEvent() {
+        EndEvent endEvent = new EndEvent();
+        endEvent.setId("end");
+        return endEvent;
+    }
+
+    private SequenceFlow createSequenceFlow(String sourceRef, String targetRef) {
+        SequenceFlow flow = new SequenceFlow();
+        flow.setSourceRef(sourceRef);
+        flow.setTargetRef(targetRef);
+        return flow;
     }
 }
