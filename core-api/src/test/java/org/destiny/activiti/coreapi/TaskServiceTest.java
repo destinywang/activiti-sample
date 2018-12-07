@@ -150,4 +150,9 @@ public class TaskServiceTest {
 
     }
 
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-task.bpmn20.xml"})
+    public void testDelegate() {
+
+    }
 }

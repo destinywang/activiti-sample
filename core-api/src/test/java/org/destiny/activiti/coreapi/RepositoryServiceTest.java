@@ -44,16 +44,16 @@ public class RepositoryServiceTest {
         DeploymentBuilder deploymentBuilder1 = repositoryService.createDeployment();
         deploymentBuilder1   // 一个部署对象就记录了一次部署
                 .name("测试部署资源1")                 // 设置名称
-                .addClasspathResource("org/destiny/activiti/my-process.bpmn20.xml")
+//                .addClasspathResource("org/destiny/activiti/my-process.bpmn20.xml")
                 .addClasspathResource("org/destiny/activiti/SecondApprove.bpmn20.xml")
                 .deploy();                          // 完成部署
 
-        DeploymentBuilder deploymentBuilder2 = repositoryService.createDeployment();
-        deploymentBuilder2   // 一个部署对象就记录了一次部署
-                .name("测试部署资源2")                 // 设置名称
-                .addClasspathResource("org/destiny/activiti/my-process.bpmn20.xml")
-                .addClasspathResource("org/destiny/activiti/SecondApprove.bpmn20.xml")
-                .deploy();                          // 完成部署
+//        DeploymentBuilder deploymentBuilder2 = repositoryService.createDeployment();
+//        deploymentBuilder2   // 一个部署对象就记录了一次部署
+//                .name("测试部署资源2")                 // 设置名称
+//                .addClasspathResource("org/destiny/activiti/my-process.bpmn20.xml")
+//                .addClasspathResource("org/destiny/activiti/SecondApprove.bpmn20.xml")
+//                .deploy();                          // 完成部署
 
         // 查询部署对象
         List<Deployment> deploymentList = repositoryService.createDeploymentQuery()

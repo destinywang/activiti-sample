@@ -1,25 +1,30 @@
 package org.destiny.activiti;
 
+import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
+import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
+import org.activiti.image.ProcessDiagramGenerator;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.destiny.model.SysWorkflow;
 import org.destiny.model.SysWorkflowStep;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 public class WorkflowTest {
@@ -162,6 +167,13 @@ public class WorkflowTest {
                 .processInstanceId(processInstance.getId())
                 .list();
 
+
+
+//        ProcessEngineConfiguration processEngineConfiguration = activitiRule.getProcessEngine().getProcessEngineConfiguration();
+//        ProcessDiagramGenerator processDiagramGenerator = processEngineConfiguration.getProcessDiagramGenerator();
+//        InputStream inputStream = processDiagramGenerator.generateJpgDiagram(model);
+//
+//        FileUtils.copyInputStreamToFile(inputStream, new File("target/deployments/" + process.getId() + ".jpg"));
         // 将流程图保存到本地
 //        InputStream processDiagram = activitiRule.getRepositoryService().getProcessDiagram(processInstance.getProcessDefinitionId());
 //        FileUtils.copyInputStreamToFile(processDiagram, new File("target/deployments/" + process.getId() + ".png"));
@@ -289,6 +301,96 @@ public class WorkflowTest {
         userTask.setName(name);
         userTask.setId(id);
         userTask.setCandidateGroups(candidateGroups);
+        return userTask;
+    }
+
+    @Test
+    public void createMultiInstance() throws IOException {
+        BpmnModel bpmnModel = new BpmnModel();
+        Process process = new Process();
+        process.setId("parallel");
+        bpmnModel.addProcess(process);
+        StartEvent startEvent = createStartEvent();
+
+        // userTask
+        String id = "parallelOrSign";
+        String name = "parallelOrSignName";
+        List<String> candidates = Arrays.asList("destiny", "freedom", "justice");
+        UserTask userTask = createUserTask(id, name, candidates);
+        MultiInstanceLoopCharacteristics loopCharacteristics = new MultiInstanceLoopCharacteristics();
+        loopCharacteristics.setInputDataItem("users");
+        loopCharacteristics.setElementVariable("user");
+        loopCharacteristics.setSequential(false);
+        loopCharacteristics.setCompletionCondition("${nrOfCompletedInstances==nrOfInstances}");
+        userTask.setLoopCharacteristics(loopCharacteristics);
+        userTask.setAssignee("${user}");
+
+        EndEvent endEvent = createEndEvent();
+
+
+        process.addFlowElement(startEvent);
+        process.addFlowElement(userTask);
+        process.addFlowElement(endEvent);
+        process.addFlowElement(createSequenceFlow("startEvent", id, "flow1", null));
+        process.addFlowElement(createSequenceFlow(id, "endEvent", "flow2", null));
+
+//        byte[] bytes = new BpmnXMLConverter().convertToXML(bpmnModel);
+//        FileUtils.copyInputStreamToFile(new ByteArrayInputStream(bytes), new File("target/parallel.xml"));
+
+        Deployment deployment = activitiRule.getRepositoryService()
+                .createDeployment()
+                .addBpmnModel(process.getId() + ".bpmn", bpmnModel)
+                .name(process.getName() + "_deployment")
+                .deploy();
+
+        log.info("deployment: {}", ToStringBuilder.reflectionToString(deployment, ToStringStyle.JSON_STYLE));
+
+        Map<String, Object> variables = Maps.newHashMap();
+        variables.put("users", Arrays.asList("wk1", "wk2"));
+
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("parallel", variables);
+        log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+
+        List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
+        log.info("当前可操作的 task 数量: {}", taskList.size());
+        for (Task task : taskList) {
+            log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+
+
+        List<Task> listDestiny = activitiRule.getTaskService().createTaskQuery().taskCandidateUser("destiny").list();
+        for (Task task : listDestiny) {
+            log.info("taskDestiny: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+        List<Task> listFreedom = activitiRule.getTaskService().createTaskQuery().taskCandidateUser("freedom").list();
+        for (Task task : listFreedom) {
+            log.info("taskFreedom: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+        List<Task> listJustice = activitiRule.getTaskService().createTaskQuery().taskCandidateUser("justice").list();
+        for (Task task : listJustice) {
+            log.info("taskJustice: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+        List<Task> listWk1 = activitiRule.getTaskService().createTaskQuery().taskAssignee("wk1").list();
+        for (Task task : listWk1) {
+            log.info("taskWk1: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+        List<Task> listWk2 = activitiRule.getTaskService().createTaskQuery().taskAssignee("wk2").list();
+        for (Task task : listWk2) {
+            log.info("taskWk2: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+
+//        byte[] bytes = new BpmnXMLConverter().convertToXML(bpmnModel, "utf-8");
+//        log.info("byte length: {}", bytes.length);
+//
+//        log.info("由 freedom 成为办理人");
+//        activitiRule.getTaskService().claim();
+    }
+
+    private UserTask createUserTask(String id, String name, List<String> candidates) {
+        UserTask userTask = new UserTask();
+        userTask.setId(id);
+        userTask.setName(name);
+        userTask.setCandidateUsers(candidates);
         return userTask;
     }
 }

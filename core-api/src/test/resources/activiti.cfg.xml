@@ -19,7 +19,7 @@
         <property name="dbIdentityUsed" value="true"/>
         <!-- 默认表名前缀, 不影响创建, 只会在使用的时候加上该前缀 -->
         <!--<property name="databaseTablePrefix" value="DESTINY_"/>-->
-        <property name="databaseType" value="mysql"/>
+        <!--<property name="databaseType" value="mysql"/>-->
     </bean>
 
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
