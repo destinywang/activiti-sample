@@ -12,6 +12,7 @@
         <module>activiti-helloworld</module>
         <module>core-api</module>
         <module>activiti-web</module>
+        <module>bpmn20</module>
     </modules>
 
     <build>
