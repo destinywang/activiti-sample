@@ -7,6 +7,7 @@ import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.DiagramEdge;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
@@ -379,9 +380,16 @@ public class WorkflowTest {
             log.info("taskWk2: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
         }
 
-//        byte[] bytes = new BpmnXMLConverter().convertToXML(bpmnModel, "utf-8");
-//        log.info("byte length: {}", bytes.length);
-//
+        byte[] bytes = new BpmnXMLConverter().convertToXML(bpmnModel, "utf-8");
+        log.info("byte length: {}", bytes.length);
+
+        FileUtils.copyInputStreamToFile(new ByteArrayInputStream(bytes), new File("target/parallel.xml"));
+
+        ProcessDiagramGenerator processDiagramGenerator = activitiRule.getProcessEngine().getProcessEngineConfiguration().getProcessDiagramGenerator();
+        log.info("processDiagramGenerator: {}", processDiagramGenerator);
+        InputStream inputStream = processDiagramGenerator.generatePngDiagram(bpmnModel);
+        FileUtils.copyInputStreamToFile(inputStream, new File("target/parallel.png"));
+
 //        log.info("由 freedom 成为办理人");
 //        activitiRule.getTaskService().claim();
     }
