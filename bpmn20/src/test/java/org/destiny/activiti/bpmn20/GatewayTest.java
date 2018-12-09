@@ -9,6 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -45,4 +46,32 @@ public class GatewayTest {
 //        assertEquals(task.getName(), "精英");
     }
 
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process-parallel.bpmn20.xml"})
+    public void testParallelGateway() {
+        activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+
+        List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
+        log.info("过并行网关时的 task 数量: {}", taskList.size());
+        for (Task task : taskList) {
+            log.info("task name: {}", task.getName());
+        }
+        assertEquals(2, taskList.size());
+
+        activitiRule.getTaskService().complete(taskList.get(0).getId());
+        List<Task> taskList1 = activitiRule.getTaskService().createTaskQuery().list();
+        log.info("提交第 1 个任务时的 task 数量: [{}]", taskList1.size());
+        for (Task task : taskList1) {
+            log.info("task name: {}", task.getName());
+        }
+        assertEquals(1, taskList1.size());
+
+        activitiRule.getTaskService().complete(taskList.get(1).getId());
+        List<Task> taskList2 = activitiRule.getTaskService().createTaskQuery().list();
+        log.info("提交第 2 个任务时的 task 数量: [{}]", taskList2.size());
+        for (Task task : taskList2) {
+            log.info("task name: {}", task.getName());
+        }
+        assertEquals(1, taskList1.size());
+    }
 }
