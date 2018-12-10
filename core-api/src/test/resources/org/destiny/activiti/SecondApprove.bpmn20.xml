@@ -50,8 +50,8 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${hrApprove == "N" || tlApprove == "n"}]]></conditionExpression>
     </sequenceFlow>
   </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_SencondApprove">
-    <bpmndi:BPMNPlane bpmnElement="SencondApprove" id="BPMNPlane_SencondApprove">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_SecondApprove">
+    <bpmndi:BPMNPlane bpmnElement="SecondApprove" id="BPMNPlane_SecondApprove">
       <bpmndi:BPMNShape bpmnElement="startEvent" id="BPMNShape_startEvent">
         <omgdc:Bounds height="35.0" width="35.0" x="345.0" y="41.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
