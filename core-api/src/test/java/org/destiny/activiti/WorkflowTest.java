@@ -6,6 +6,8 @@ import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.ProcessEngineConfiguration;
+import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DiagramEdge;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -167,7 +169,6 @@ public class WorkflowTest {
                 .createTaskQuery()
                 .processInstanceId(processInstance.getId())
                 .list();
-
 
 
 //        ProcessEngineConfiguration processEngineConfiguration = activitiRule.getProcessEngine().getProcessEngineConfiguration();
@@ -335,6 +336,7 @@ public class WorkflowTest {
         process.addFlowElement(createSequenceFlow("startEvent", id, "flow1", null));
         process.addFlowElement(createSequenceFlow(id, "endEvent", "flow2", null));
 
+
 //        byte[] bytes = new BpmnXMLConverter().convertToXML(bpmnModel);
 //        FileUtils.copyInputStreamToFile(new ByteArrayInputStream(bytes), new File("target/parallel.xml"));
 
@@ -400,5 +402,80 @@ public class WorkflowTest {
         userTask.setName(name);
         userTask.setCandidateUsers(candidates);
         return userTask;
+    }
+
+    /**
+     * 撤回
+     */
+    @Test
+    public void testRecall() {
+        String taskId = "1";
+        // 获得当前任务
+        HistoricTaskInstance taskInstance = activitiRule.getHistoryService()
+                .createHistoricTaskInstanceQuery()
+                .taskId(taskId)
+                .singleResult();
+
+        // 根据流程 id 查询代办任务中流程信息
+        Task task = activitiRule.getTaskService()
+                .createTaskQuery()
+                .processInstanceId(taskInstance.getProcessInstanceId())
+                .singleResult();
+
+        // 取回流程节点, 当前任务 id, 取回任务 id
+        recall(task.getId(), taskInstance.getId());
+    }
+
+    /**
+     * 撤回流程
+     *
+     * @param taskId
+     * @param currTaskId
+     */
+    private void recall(String taskId, String currTaskId) {
+//        if (StringUtils.isEmpty(currTaskId)) {
+//            throw
+//        }
+        List<Task> taskList = findTaskListByKey(findProcessInstanceByTaskId(taskId).getId(), findTaskById(taskId).getTaskDefinitionKey());
+        for (Task task : taskList) {
+
+        }
+
+    }
+
+    private List<Task> findTaskListByKey(String processInstanceId, String taskDefinitionKey) {
+        return activitiRule.getTaskService().createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .taskDefinitionKey(taskDefinitionKey)
+                .list();
+    }
+
+    private ProcessInstance findProcessInstanceByTaskId(String taskId) {
+        ProcessInstance processInstance = activitiRule.getRuntimeService()
+                .createProcessInstanceQuery()
+                .processInstanceId(findTaskById(taskId).getProcessInstanceId()).singleResult();
+        return processInstance;
+    }
+
+    private Task findTaskById(String taskId) {
+        Task task = activitiRule.getTaskService()
+                .createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+        return task;
+    }
+
+    private void commitProcess(String taskId, Map<String, Object> variables,
+                               String activityId) throws Exception {
+        if (variables == null) {
+            variables = new HashMap<String, Object>();
+        }
+        // 跳转节点为空，默认提交操作
+        if (StringUtils.isEmpty(activityId)) {
+            activitiRule.getTaskService().complete(taskId, variables);
+        } else {
+            // 流程转向操作
+            turnTransition(taskId, activityId, variables);
+        }
     }
 }

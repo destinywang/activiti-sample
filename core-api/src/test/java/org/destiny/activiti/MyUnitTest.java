@@ -26,7 +26,7 @@ public class MyUnitTest {
 		Task task = activitiRule.getTaskService().createTaskQuery().singleResult();
 		log.info("task.name: {}", task.getName());
 		assertEquals("Activiti is awesome!", task.getName());
-		activitiRule.getTaskService().createAttachment()
+//		activitiRule.getTaskService().createAttachment();
 	}
 
 }
