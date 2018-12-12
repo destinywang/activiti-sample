@@ -475,7 +475,7 @@ public class WorkflowTest {
             activitiRule.getTaskService().complete(taskId, variables);
         } else {
             // 流程转向操作
-            turnTransition(taskId, activityId, variables);
+//            turnTransition(taskId, activityId, variables);
         }
     }
 }
