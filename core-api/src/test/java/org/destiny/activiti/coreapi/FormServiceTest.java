@@ -3,9 +3,11 @@ package org.destiny.activiti.coreapi;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.engine.FormService;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.form.FormProperty;
 import org.activiti.engine.form.StartFormData;
 import org.activiti.engine.form.TaskFormData;
+import org.activiti.engine.impl.form.FormPropertyHandler;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -62,5 +64,13 @@ public class FormServiceTest {
 
         Task task1 = activitiRule.getTaskService().createTaskQuery().taskId(task.getId()).singleResult();
         log.info("task1: {}", task1);
+    }
+
+
+    @Test
+    public void formTest() {
+        FormService formService = activitiRule.getFormService();
+        HistoryService historyService = activitiRule.getHistoryService();
+
     }
 }
