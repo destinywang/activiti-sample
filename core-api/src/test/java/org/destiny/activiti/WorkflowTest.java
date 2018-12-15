@@ -389,8 +389,8 @@ public class WorkflowTest {
 
         ProcessDiagramGenerator processDiagramGenerator = activitiRule.getProcessEngine().getProcessEngineConfiguration().getProcessDiagramGenerator();
         log.info("processDiagramGenerator: {}", processDiagramGenerator);
-        InputStream inputStream = processDiagramGenerator.generatePngDiagram(bpmnModel);
-        FileUtils.copyInputStreamToFile(inputStream, new File("target/parallel.png"));
+//        InputStream inputStream = processDiagramGenerator.generatePngDiagram(bpmnModel);
+//        FileUtils.copyInputStreamToFile(inputStream, new File("target/parallel.png"));
 
 //        log.info("由 freedom 成为办理人");
 //        activitiRule.getTaskService().claim();

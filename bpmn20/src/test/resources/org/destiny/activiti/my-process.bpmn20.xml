@@ -12,7 +12,7 @@
 		<sequenceFlow id="flow1" sourceRef="start" targetRef="someTask" />
 		
 		<userTask id="someTask" name="Activiti is awesome!" />
-		<sequenceFlow id="flow2" sourceRef="someTask" targetRef="end" />
+		<sequenceFlow id="flow2" sourceRef="someTask" targetRef="end"/>
 
 		<endEvent id="end" />
 
