@@ -21,6 +21,6 @@ public class UsersBean implements Serializable {
 
     public List<String> getUsers(String userId) {
         log.info("userId: {}", userId);
-        return Arrays.asList("destiny", "freedom", "justice");
+        return Arrays.asList(userId + "1", userId + "2", userId + "3");
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -131,4 +132,69 @@ public class GatewayExpressSpringTest {
 
     }
 
+    @Test
+    public void testExclusionGatewayModel() {
+        BpmnModel bpmnModel = new BpmnModel();
+        Process process = new Process();
+        process.setId("my-process");
+
+        StartEvent startEvent = new StartEvent();
+        startEvent.setId("startEvent");
+
+        UserTask someTask = new UserTask();
+        someTask.setId("someTask");
+        someTask.setName("Activiti is awesome!");
+        someTask.setAssignee("${user}");
+        MultiInstanceLoopCharacteristics multiInstanceLoopCharacteristics = new MultiInstanceLoopCharacteristics();
+        multiInstanceLoopCharacteristics.setSequential(false);
+        multiInstanceLoopCharacteristics.setInputDataItem("${usersBean.getUsers(name)}");
+        multiInstanceLoopCharacteristics.setElementVariable("user");
+        multiInstanceLoopCharacteristics.setCompletionCondition("${nrOfCompletedInstances > 0}");
+
+        someTask.setLoopCharacteristics(multiInstanceLoopCharacteristics);
+
+        EndEvent endEvent = new EndEvent();
+        endEvent.setId("endEvent");
+
+        SequenceFlow flow1 = createSequence("startEvent", "someTask", "flow1", "flow1", null);
+        SequenceFlow flow2 = createSequence("someTask", "endEvent", "flow2", "flow2", null);
+
+        process.addFlowElement(startEvent);
+        process.addFlowElement(someTask);
+        process.addFlowElement(endEvent);
+        process.addFlowElement(flow1);
+        process.addFlowElement(flow2);
+
+        bpmnModel.addProcess(process);
+
+        Deployment deployment = activitiRule.getRepositoryService().createDeployment()
+                .addBpmnModel("bpmn", bpmnModel)
+                .deploy();
+
+        log.info("deployment: {}", ToStringBuilder.reflectionToString(deployment, ToStringStyle.JSON_STYLE));
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("usersBean", usersBean);
+        map.put("name", "wk");
+
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process", map);
+        log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+
+        List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
+        log.info("当前 taskList 数量: {}", taskList.size());
+
+        for (Task task : taskList) {
+            log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+
+        activitiRule.getTaskService().complete(taskList.get(0).getId());
+        log.info("其中一个节点完成审批");
+
+        taskList = activitiRule.getTaskService().createTaskQuery().list();
+        log.info("第一个节点审批完成后 taskList 数量: {}", taskList.size());
+
+        for (Task task : taskList) {
+            log.info("第一个节点审批完成后 task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+    }
 }

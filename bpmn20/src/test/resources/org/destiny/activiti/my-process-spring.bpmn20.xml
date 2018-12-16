@@ -7,17 +7,13 @@
 	expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
 
 	<process id="my-process">
-
 		<startEvent id="start" />
 		<sequenceFlow id="flow1" sourceRef="start" targetRef="someTask" />
-		
         <userTask id="someTask" name="Activiti is awesome!" activiti:assignee="${user}">
             <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${usersBean.getUsers('123')}" activiti:elementVariable="user"/>
         </userTask>
 		<sequenceFlow id="flow2" sourceRef="someTask" targetRef="end"/>
-
 		<endEvent id="end" />
-
 	</process>
 
 </definitions>
