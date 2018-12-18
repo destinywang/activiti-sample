@@ -41,8 +41,8 @@ import java.util.Map;
 public class GatewayExpressSpringTest {
 
     @Rule
-//    public ActivitiRule activitiRule = new ActivitiRule("activiti-mysql.cfg.xml");
-    public ActivitiRule activitiRule = new ActivitiRule();
+    public ActivitiRule activitiRule = new ActivitiRule("activiti-mysql.cfg.xml");
+//    public ActivitiRule activitiRule = new ActivitiRule();
 
     @Autowired
     private UsersBean usersBean;

@@ -3,6 +3,7 @@ package org.destiny.activiti;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
+import org.activiti.engine.FormService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
@@ -106,11 +107,13 @@ public class GatewayExpressTest {
         StartEvent startEvent = new StartEvent();
         startEvent.setId("startEvent");
         startEvent.setName("startEvent");
+        startEvent.setFormKey("formKey-startEvent");
 
         UserTask approve = new UserTask();
         approve.setAssignee("destiny");
         approve.setId("approve");
         approve.setName("approve");
+        approve.setFormKey("formKey-approve");
 
         ExclusiveGateway gateway = new ExclusiveGateway();
         gateway.setId("gateway");
@@ -120,6 +123,7 @@ public class GatewayExpressTest {
         secondApprove.setId("secondApprove");
         secondApprove.setName("secondApprove");
         secondApprove.setAssignee("destiny");
+        secondApprove.setFormKey("formKey-secondApprove");
 
         EndEvent pass = new EndEvent();
         pass.setId("pass");
@@ -173,6 +177,7 @@ public class GatewayExpressTest {
         log.info("approve 节点提交后的 task 总数: [{}]", taskList.size());
         for (Task task1 : taskList) {
             log.info("task: {}", ToStringBuilder.reflectionToString(task1, ToStringStyle.JSON_STYLE));
+            log.info("formKey: {}", task1.getFormKey());
         }
 
         log.info("no process: {}", processInstance == null);

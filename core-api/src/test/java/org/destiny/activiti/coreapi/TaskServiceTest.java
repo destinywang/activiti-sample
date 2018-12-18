@@ -155,4 +155,48 @@ public class TaskServiceTest {
     public void testDelegate() {
 
     }
+
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process.bpmn20.xml"})
+    public void testSubTask() {
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+        TaskService taskService = activitiRule.getTaskService();
+        Task task = taskService.createTaskQuery().singleResult();
+        log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        Task subTask = taskService.newTask();
+        subTask.setParentTaskId(task.getId());
+        subTask.setName("subTask");
+        subTask.setAssignee("subDestiny");
+        taskService.saveTask(subTask);
+
+        List<Task> taskList = taskService.createTaskQuery().list();
+        taskLogger(taskList);
+
+        log.info("----------destiny----------");
+        Task destiny = taskService.createTaskQuery().taskAssignee("destiny").singleResult();
+        log.info("task: {}", ToStringBuilder.reflectionToString(destiny, ToStringStyle.JSON_STYLE));
+
+//        taskService.complete(destiny.getId());
+        taskList = taskService.createTaskQuery().list();
+        taskLogger(taskList);
+
+        log.info("---------- sub-destiny ----------");
+        Task subDestiny = taskService.createTaskQuery().taskAssignee("subDestiny").singleResult();
+        log.info("task: {}", ToStringBuilder.reflectionToString(subDestiny, ToStringStyle.JSON_STYLE));
+//        taskService.complete(subDestiny.getId());
+        log.info("---------- 当前总数 ----------");
+        taskList = taskService.createTaskQuery().list();
+        taskLogger(taskList);
+
+        log.info("---------- 根据流程实例查询 ----------");
+        taskList = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
+        taskLogger(taskList);
+    }
+
+    private void taskLogger(List<Task> taskList) {
+        log.info("task 数量: {}", taskList.size());
+        for (Task task : taskList) {
+            log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
+    }
 }
