@@ -183,10 +183,14 @@ public class TaskServiceTest {
         log.info("---------- sub-destiny ----------");
         Task subDestiny = taskService.createTaskQuery().taskAssignee("subDestiny").singleResult();
         log.info("task: {}", ToStringBuilder.reflectionToString(subDestiny, ToStringStyle.JSON_STYLE));
-        taskService.complete(subDestiny.getId());
+//        taskService.complete(subDestiny.getId());
+        log.info("---------- 当前总数 ----------");
         taskList = taskService.createTaskQuery().list();
         taskLogger(taskList);
 
+        log.info("---------- 根据流程实例查询 ----------");
+        taskList = taskService.createTaskQuery().processInstanceId(processInstance.getId()).list();
+        taskLogger(taskList);
     }
 
     private void taskLogger(List<Task> taskList) {
