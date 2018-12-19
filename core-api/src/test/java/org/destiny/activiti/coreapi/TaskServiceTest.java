@@ -6,6 +6,10 @@ import org.activiti.bpmn.model.FlowNode;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.impl.cmd.DelegateTaskCmd;
+import org.activiti.engine.impl.cmd.NewTaskCmd;
+import org.activiti.engine.impl.cmd.SaveTaskCmd;
+import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.*;
 import org.activiti.engine.test.ActivitiRule;
@@ -14,10 +18,13 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.destiny.activiti.DeleteTaskCmd;
 import org.destiny.activiti.SetFlowNodeAndGoCmd;
+import org.destiny.activiti.cmd.AddTaskCmd;
+import org.destiny.activiti.cmd.CreateDelegateTaskCmd;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -120,7 +127,8 @@ public class TaskServiceTest {
         TaskService taskService = activitiRule.getTaskService();
         Task task = taskService.createTaskQuery().singleResult();
         // 可以上传数据流或 url
-        Attachment attachment = taskService.createAttachment("url", task.getId(), task.getProcessInstanceId(), "name", "desc", "/url/test.png");
+        Attachment attachment = taskService.createAttachment
+                ("url", task.getId(), task.getProcessInstanceId(), "name", "desc", "/url/test.png");
         log.info("attachment: {}", attachment);
         List<Attachment> taskAttachments = taskService.getTaskAttachments(task.getId());
         for (Attachment taskAttachment : taskAttachments) {
@@ -257,4 +265,65 @@ public class TaskServiceTest {
         // 流程执行到来源节点
         activitiRule.getManagementService().executeCommand(new SetFlowNodeAndGoCmd(targetNode, executionEntityId));
     }
+
+
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process.bpmn20.xml"})
+    public void testDelegateCmd() {
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+        log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+        TaskService taskService = activitiRule.getTaskService();
+        Task task = taskService.createTaskQuery().singleResult();
+        log.info("委托前: task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        // 委托
+//        TaskEntity cameryTask = activitiRule.getManagementService().executeCommand(new CreateDelegateTaskCmd(task, "camery"));
+//        Task newTask = activitiRule.getManagementService().executeCommand(new NewTaskCmd(task.getId()));
+        activitiRule.getManagementService().executeCommand(new DelegateTaskCmd(task.getId(), "camery"));
+//        log.info("cameryTask: {}", ToStringBuilder.reflectionToString(cameryTask, ToStringStyle.JSON_STYLE));
+//        activitiRule.getManagementService().executeCommand(new SaveTaskCmd(cameryTask));
+//
+        List<Task> taskList = taskService.createTaskQuery().list();
+        taskLogger(taskList);
+
+
+        log.info("===================== destiny =====================");
+        List<HistoricTaskInstance> destiny = activitiRule.getHistoryService().createHistoricTaskInstanceQuery().taskAssignee("destiny").list();
+        hisTaskLogger(destiny);
+
+        log.info("===================== camery =====================");
+        List<HistoricTaskInstance> camery = activitiRule.getHistoryService().createHistoricTaskInstanceQuery().taskAssignee("camery").list();
+        hisTaskLogger(camery);
+//
+//        taskService.complete(task.getId());
+//        taskService.complete(cameryTask.getId());
+    }
+
+
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process.bpmn20.xml"})
+    public void testDelegateDynamicCmd() {
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+        log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+        TaskService taskService = activitiRule.getTaskService();
+        Task task = taskService.createTaskQuery().singleResult();
+        log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+
+//        activitiRule.getRuntimeService().addUserIdentityLink(task.getProcessInstanceId(), "camery", IdentityLinkType.PARTICIPANT);
+        activitiRule.getTaskService().addUserIdentityLink(task.getId(), "camery", IdentityLinkType.CANDIDATE);
+        List<IdentityLink> identityLinksForTask = activitiRule.getTaskService().getIdentityLinksForTask(task.getId());
+        for (IdentityLink identityLink : identityLinksForTask) {
+            log.info("identityLink: {}", identityLink);
+        }
+
+
+        List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
+        taskLogger(taskList);
+
+
+//        log.info("=============== camery ===============");
+//        List<Task> camery = activitiRule.getTaskService().createTaskQuery().list();
+//        taskLogger(camery);
+    }
+
+
 }
