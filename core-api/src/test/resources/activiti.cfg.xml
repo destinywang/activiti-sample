@@ -4,7 +4,7 @@
     <!-- 配置 ProcessEngineConfiguration  -->
     <bean id="processEngineConfiguration" class="org.activiti.engine.impl.cfg.StandaloneInMemProcessEngineConfiguration">
         <!-- 配置数据库连接 -->
-        <!--<property name="dataSource" ref="dataSource"/>-->
+        <property name="dataSource" ref="dataSource"/>
 
         <!-- false: 不会自动创建表, 没有表, 则抛异常 -->
         <!-- create-drop: 先删除, 再创建表 -->
