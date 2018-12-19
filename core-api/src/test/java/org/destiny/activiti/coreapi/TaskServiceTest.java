@@ -1,6 +1,7 @@
 package org.destiny.activiti.coreapi;
 
 import com.google.common.collect.Maps;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.FlowNode;
 import org.activiti.bpmn.model.Process;
@@ -20,6 +21,7 @@ import org.destiny.activiti.DeleteTaskCmd;
 import org.destiny.activiti.SetFlowNodeAndGoCmd;
 import org.destiny.activiti.cmd.AddTaskCmd;
 import org.destiny.activiti.cmd.CreateDelegateTaskCmd;
+import org.destiny.activiti.cmd.ShareniuCountersignAddCmd;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.util.CollectionUtils;
@@ -326,4 +328,37 @@ public class TaskServiceTest {
     }
 
 
+    @Test
+    @Deployment(resources = {"org/destiny/activiti/my-process.bpmn20.xml"})
+    public void test() {
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+        log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+        TaskService taskService = activitiRule.getTaskService();
+        Task task = taskService.createTaskQuery().singleResult();
+        log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+
+        activitiRule.getManagementService().executeCommand(new ShareniuCountersignAddCmd(task.getExecutionId(), "camery"));
+
+        List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
+        taskLogger(taskList);
+
+
+//        log.info("================== camery complete ==================");
+//        Task camery = taskService.createTaskQuery().taskAssignee("camery").singleResult();
+//        taskService.complete(camery.getId());
+//
+//        taskList = activitiRule.getTaskService().createTaskQuery().list();
+//        taskLogger(taskList);
+
+
+        log.info("================== destiny complete ==================");
+        Task destiny = taskService.createTaskQuery().taskAssignee("destiny").singleResult();
+        taskService.complete(destiny.getId());
+
+        taskList = activitiRule.getTaskService().createTaskQuery().list();
+        taskLogger(taskList);
+
+        Task camery = taskService.createTaskQuery().taskAssignee("camery").singleResult();
+        taskService.complete(camery.getId());
+    }
 }
