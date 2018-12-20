@@ -6,6 +6,7 @@ import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.ProcessEngineConfiguration;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.Deployment;
@@ -477,5 +478,30 @@ public class WorkflowTest {
             // 流程转向操作
 //            turnTransition(taskId, activityId, variables);
         }
+    }
+
+    @Test
+    @org.activiti.engine.test.Deployment(resources = {"org/destiny/activiti/my-process-second.bpmn20.xml"})
+    public void testSecond() {
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+        Task task = activitiRule.getTaskService().createTaskQuery().singleResult();
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("_ACTION", "YES");
+        activitiRule.getTaskService().complete(task.getId(), map);
+
+        List<Task> list = activitiRule.getTaskService().createTaskQuery().list();
+        for (Task task1 : list) {
+            log.info("task: {}", ToStringBuilder.reflectionToString(task1, ToStringStyle.JSON_STYLE));
+        }
+
+        task = activitiRule.getTaskService().createTaskQuery().singleResult();
+//        Map<String, Object> taskLocalVariables = task.getTaskLocalVariables();
+//        log.info("taskLocalVariables: {}", taskLocalVariables);
+        map = Maps.newHashMap();
+        map.put("_ACTION", "NO");
+        activitiRule.getTaskService().complete(task.getId(), map);
+
+        HistoricProcessInstance historicProcessInstance = activitiRule.getHistoryService().createHistoricProcessInstanceQuery().singleResult();
+        log.info("historicProcessInstance: {}", ToStringBuilder.reflectionToString(historicProcessInstance, ToStringStyle.JSON_STYLE));
     }
 }
