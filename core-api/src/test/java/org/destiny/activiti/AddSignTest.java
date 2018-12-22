@@ -2,6 +2,7 @@ package org.destiny.activiti;
 
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
@@ -52,8 +53,8 @@ public class AddSignTest {
                 .taskId(taskId)
                 .singleResult();
 
-        String firstNodeId = "destiny-a";
-        String lastNodeId = "destiny-b";
+        String firstNodeId = "destinyA";
+        String lastNodeId = "destinyB";
 
         List<TaskModel> taskModelList = Lists.newArrayList();
         TaskModel taskModel1 = GenerateActivityUtils.generateTaskModel("destiny-d", "destiny-d", "destiny-d");
@@ -70,10 +71,17 @@ public class AddSignTest {
 
     @Test
     public void testComplete() {
-        String taskId = "2502";
+        String taskId = "10002";
         activitiRule.getTaskService().complete(taskId);
         for (Task task : activitiRule.getTaskService().createTaskQuery().list()) {
             log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
         }
+    }
+
+    @Test
+    public void test() {
+        List<HistoricTaskInstance> list = activitiRule.getHistoryService().createHistoricTaskInstanceQuery().processInstanceId("4").list();
+        log.info("list: {}", list);
+
     }
 }

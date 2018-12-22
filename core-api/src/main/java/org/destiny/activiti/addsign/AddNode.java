@@ -121,7 +121,8 @@ public class AddNode {
      * @param firstNodeId
      * @param lastNodeId
      */
-    private void persistenceToDB(String processDefinitionId, String processInstanceId, ProcessEngine processEngine, List<TaskModel> taskModelList, String firstNodeId, String lastNodeId) {
+    private void persistenceToDB(String processDefinitionId, String processInstanceId, ProcessEngine processEngine,
+                                 List<TaskModel> taskModelList, String firstNodeId, String lastNodeId) {
         ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) processEngine.getProcessEngineConfiguration();
         SqlSession sqlSession = processEngineConfiguration.getSqlSessionFactory().openSession();
         TmpActivityModel tmpActivityModel = getTmpActivityModel(taskModelList, firstNodeId, lastNodeId);
