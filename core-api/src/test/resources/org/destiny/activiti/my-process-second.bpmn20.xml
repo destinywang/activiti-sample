@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+
+    <process id="my-process">
+
+        <startEvent id="start"/>
+        <userTask id="approve" name="一级审批" activiti:assignee="destiny"/>
+        <exclusiveGateway id="gateway"/>
+        <userTask id="second_approve" name="二级审批" activiti:assignee="camery"/>
+        <exclusiveGateway id="second_gateway"/>
+        <endEvent id="reject"/>
+        <endEvent id="pass"/>
+
+        <sequenceFlow sourceRef="start" targetRef="approve"/>
+        <sequenceFlow sourceRef="approve" targetRef="gateway"/>
+        <sequenceFlow sourceRef="gateway" targetRef="reject">
+            <conditionExpression>
+                <![CDATA[
+                    ${_ACTION == "NO"}
+                ]]>
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow sourceRef="gateway" targetRef="second_approve">
+            <conditionExpression>
+                <![CDATA[
+                    ${_ACTION == "YES"}
+                ]]>
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow sourceRef="second_approve" targetRef="second_gateway"/>
+        <sequenceFlow sourceRef="second_gateway" targetRef="reject">
+            <conditionExpression>
+                <![CDATA[
+                    ${_ACTION == "NO"}
+                ]]>
+            </conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow sourceRef="second_gateway" targetRef="pass">
+            <conditionExpression>
+                <![CDATA[
+                    ${_ACTION == "YES"}
+                ]]>
+            </conditionExpression>
+        </sequenceFlow>
+    </process>
+
+</definitions>

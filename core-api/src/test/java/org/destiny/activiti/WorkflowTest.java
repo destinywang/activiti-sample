@@ -6,10 +6,14 @@ import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.ProcessEngineConfiguration;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.impl.persistence.entity.ExecutionEntityImpl;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DiagramEdge;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
@@ -314,6 +318,13 @@ public class WorkflowTest {
         bpmnModel.addProcess(process);
         StartEvent startEvent = createStartEvent();
 
+        ValuedDataObject dataObject = new StringDataObject();
+        dataObject.setName("FORM_KEY");
+        dataObject.setId("FORM_KEY_ID");
+        dataObject.setValue("form_key");
+        process.addFlowElement(dataObject);
+
+
         // userTask
         String id = "parallelOrSign";
         String name = "parallelOrSignName";
@@ -353,6 +364,23 @@ public class WorkflowTest {
 
         ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("parallel", variables);
         log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+
+
+        ProcessDefinition processDefinition = activitiRule.getRepositoryService().createProcessDefinitionQuery().singleResult();
+
+
+        ProcessDefinitionEntityImpl processDefinitionEntity = (ProcessDefinitionEntityImpl) processDefinition;
+        Map<String, Object> objectMap = processDefinitionEntity.getVariables();
+        log.info("dataObject: {}", objectMap);
+        Map<String, Object> objectMap1 = ((ExecutionEntityImpl) processInstance).getVariables();
+        log.info("objectMap1: {}", objectMap1);
+
+        BpmnModel model = activitiRule.getRepositoryService().getBpmnModel(processDefinition.getId());
+        FlowElement flowElement = model.getMainProcess().getFlowElement("FORM_KEY_ID");
+        log.info("flowElement: {}", ToStringBuilder.reflectionToString(flowElement, ToStringStyle.JSON_STYLE));
+        if (flowElement instanceof StringDataObject && "_FORM_KEY".equals(flowElement.getName())) {
+            log.info("");
+        }
 
         List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
         log.info("当前可操作的 task 数量: {}", taskList.size());
@@ -477,5 +505,30 @@ public class WorkflowTest {
             // 流程转向操作
 //            turnTransition(taskId, activityId, variables);
         }
+    }
+
+    @Test
+    @org.activiti.engine.test.Deployment(resources = {"org/destiny/activiti/my-process-second.bpmn20.xml"})
+    public void testSecond() {
+        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
+        Task task = activitiRule.getTaskService().createTaskQuery().singleResult();
+        Map<String, Object> map = Maps.newHashMap();
+        map.put("_ACTION", "YES");
+        activitiRule.getTaskService().complete(task.getId(), map);
+
+        List<Task> list = activitiRule.getTaskService().createTaskQuery().list();
+        for (Task task1 : list) {
+            log.info("task: {}", ToStringBuilder.reflectionToString(task1, ToStringStyle.JSON_STYLE));
+        }
+
+        task = activitiRule.getTaskService().createTaskQuery().singleResult();
+//        Map<String, Object> taskLocalVariables = task.getTaskLocalVariables();
+//        log.info("taskLocalVariables: {}", taskLocalVariables);
+        map = Maps.newHashMap();
+        map.put("_ACTION", "NO");
+        activitiRule.getTaskService().complete(task.getId(), map);
+
+        HistoricProcessInstance historicProcessInstance = activitiRule.getHistoryService().createHistoricProcessInstanceQuery().singleResult();
+        log.info("historicProcessInstance: {}", ToStringBuilder.reflectionToString(historicProcessInstance, ToStringStyle.JSON_STYLE));
     }
 }
