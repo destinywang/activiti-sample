@@ -8,20 +8,15 @@
              expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
 
     <process id="my-process">
-
         <startEvent id="start"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="someTask"/>
-
-        <!--<userTask id="someTask" name="Activiti is awesome!"/>-->
-        <userTask id="someTask" name="经理会签">
-            <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${counterSignService.getUsers(execution)">
-                <completionCondition>${counterSignService.isComplete(execution)}</completionCondition>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="someTask" />
+        <userTask id="someTask" name="Activiti is awesome!" activiti:assignee="${user}">
+            <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${userList}" activiti:elementVariable="user">
+                <completionCondition>${nrOfCompletedInstances/nrOfInstances >= 0.6}</completionCondition>
             </multiInstanceLoopCharacteristics>
         </userTask>
         <sequenceFlow id="flow2" sourceRef="someTask" targetRef="end"/>
-
-        <endEvent id="end"/>
-
+        <endEvent id="end" />
     </process>
 
 </definitions>

@@ -17,16 +17,16 @@
         <property name="dbHistoryUsed" value="true"/>
         <!-- 引擎是否使用身份数据, 对应 org/activiti/db/create/activiti.mysql.create.identity.sql, 代表用户组合角色的相关信息 -->
         <property name="dbIdentityUsed" value="true"/>
-        <property name="processEngineLifecycleListener">
-            <bean class="org.destiny.activiti.listener.StartListener"/>
-        </property>
-        <property name="eventListeners">
-            <list>
-                <bean class="org.destiny.activiti.listener.EventListener">
-                    <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
-                </bean>
-            </list>
-        </property>
+        <!--<property name="processEngineLifecycleListener">-->
+            <!--<bean class="org.destiny.activiti.listener.StartListener"/>-->
+        <!--</property>-->
+        <!--<property name="eventListeners">-->
+            <!--<list>-->
+                <!--<bean class="org.destiny.activiti.listener.EventListener">-->
+                    <!--<property name="processEngineConfiguration" ref="processEngineConfiguration"/>-->
+                <!--</bean>-->
+            <!--</list>-->
+        <!--</property>-->
         <!-- 默认表名前缀, 不影响创建, 只会在使用的时候加上该前缀 -->
         <!--<property name="databaseTablePrefix" value="DESTINY_"/>-->
         <!--<property name="databaseType" value="mysql"/>-->
