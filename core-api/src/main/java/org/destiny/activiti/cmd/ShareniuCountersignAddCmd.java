@@ -11,7 +11,6 @@ import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.impl.persistence.entity.TaskEntityImpl;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
-import org.destiny.activiti.ShareniuLoopVariableUtils;
 
 import java.util.Date;
 
@@ -69,11 +68,11 @@ public class ShareniuCountersignAddCmd implements Command<Void> {
         taskService.saveTask(taskEntity);
 
 
-        int loopCounter = ShareniuLoopVariableUtils.getLoopVariable(newExecution, "nrOfInstances");
-        int nrOfActiveInstances = ShareniuLoopVariableUtils.getLoopVariable(newExecution, "nrOfActiveInstances");
-
-        ShareniuLoopVariableUtils.setLoopVariable(newExecution, "nrOfInstances", loopCounter + 1);
-        ShareniuLoopVariableUtils.setLoopVariable(newExecution, "nrOfActiveInstances", nrOfActiveInstances + 1);
+//        int loopCounter = ShareniuLoopVariableUtils.getLoopVariable(newExecution, "nrOfInstances");
+//        int nrOfActiveInstances = ShareniuLoopVariableUtils.getLoopVariable(newExecution, "nrOfActiveInstances");
+//
+//        ShareniuLoopVariableUtils.setLoopVariable(newExecution, "nrOfInstances", loopCounter + 1);
+//        ShareniuLoopVariableUtils.setLoopVariable(newExecution, "nrOfActiveInstances", nrOfActiveInstances + 1);
 
 
         return null;

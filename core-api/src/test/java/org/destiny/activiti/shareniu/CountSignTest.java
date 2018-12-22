@@ -1,25 +1,27 @@
 package org.destiny.activiti.shareniu;
 
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.Process;
 import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.bpmn.model.UserTask;
-import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.parser.factory.ActivityBehaviorFactory;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionCacheEntry;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
-import org.activiti.engine.impl.util.ProcessDefinitionUtil;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.destiny.activiti.cmd.GetProcessCmd;
+import org.destiny.activiti.cmd.GetProcessDefinitionCacheEntryCmd;
+import org.destiny.activiti.cmd.JumpCmd;
 import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -41,32 +43,28 @@ public class CountSignTest {
     @Test
 //    @Deployment(resources = {"org/destiny/activiti/my-process-add-sign.bpmn20.xml"})
     public void testDeploy() {
-
         activitiRule.getRepositoryService().createDeployment()
                 .addClasspathResource("org/destiny/activiti/my-process-add-sign.bpmn20.xml")
                 .deploy();
         ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process");
         log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+        Task task = activitiRule.getTaskService().createTaskQuery().singleResult();
+        log.info("task: {}",  ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+    }
 
+    @Test
+    public void testJump() {
+        activitiRule.getManagementService().executeCommand(new JumpCmd("8", "destinyC"));
+        List<Task> list = activitiRule.getTaskService().createTaskQuery().list();
+        for (Task task : list) {
+            log.info("task: {}",  ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
 
-//        BpmnModel bpmnModel = new BpmnModel();
-//        Process process = new Process();
-//        bpmnModel.addProcess(process);
-//
-//        UserTask userTask = new UserTask();
-//        userTask.setId("d");
-//        userTask.setName("d");
-//        userTask.setAssignee("destinyD");
-//        userTask.setBehavior();
-//
-//        String targetActivityId = "destinyB";
-//        SequenceFlow sequenceFlow = new SequenceFlow();
-//        sequenceFlow.setId("destiny-s1");
-//        userTask.setOutgoingFlows(Arrays.asList(sequenceFlow));
-//        sequenceFlow.setTargetRef(targetActivityId);
-//        sequenceFlow.setTargetFlowElement(process.getFlowElement(targetActivityId));
-//        process.addFlowElement(userTask);
-//        process.addFlowElement(sequenceFlow);
+    }
+
+    @Test
+    public void testComplete() {
+        activitiRule.getTaskService().complete("2502");
     }
 
     /**

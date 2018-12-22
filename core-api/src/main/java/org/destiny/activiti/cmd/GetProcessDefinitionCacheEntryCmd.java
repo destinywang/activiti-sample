@@ -1,4 +1,4 @@
-package org.destiny.activiti.shareniu;
+package org.destiny.activiti.cmd;
 
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.Process;
