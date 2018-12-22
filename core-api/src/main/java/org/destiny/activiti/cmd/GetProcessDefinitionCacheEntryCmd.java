@@ -4,6 +4,7 @@ import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.impl.interceptor.Command;
 import org.activiti.engine.impl.interceptor.CommandContext;
+import org.activiti.engine.impl.persistence.deploy.DeploymentManager;
 import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionCacheEntry;
 import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.impl.util.ProcessDefinitionUtil;
@@ -28,10 +29,12 @@ public class GetProcessDefinitionCacheEntryCmd implements Command<ProcessDefinit
 
     @Override
     public ProcessDefinitionCacheEntry execute(CommandContext commandContext) {
-        BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModelFromCache(processDefinitionId);
-        Process process = bpmnModel.getMainProcess();
-        ProcessDefinitionEntity processDefinitionEntity = commandContext.getProcessDefinitionEntityManager().findById(processDefinitionId);
-        ProcessDefinitionCacheEntry processDefinitionCacheEntry = new ProcessDefinitionCacheEntry(processDefinitionEntity, bpmnModel, process);
-        return processDefinitionCacheEntry;
+//        BpmnModel bpmnModel = ProcessDefinitionUtil.getBpmnModelFromCache(processDefinitionId);
+//        Process process = bpmnModel.getMainProcess();
+//        ProcessDefinitionEntity processDefinitionEntity = commandContext.getProcessDefinitionEntityManager().findById(processDefinitionId);
+//        return new ProcessDefinitionCacheEntry(processDefinitionEntity, bpmnModel, process);
+        DeploymentManager deploymentManager = commandContext.getProcessEngineConfiguration().getDeploymentManager();
+        return deploymentManager.getProcessDefinitionCache().get(processDefinitionId);
+
     }
 }

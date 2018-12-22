@@ -28,7 +28,7 @@ import java.util.List;
 @Mapper
 public interface CreationMapper {
 
-    @Select("select * from act_creation where STATE_ = 0 AND PROCESS_DEFINITION_ID = #{processInstanceId}")
+    @Select("select * from act_creation where STATE_ = 0")
     @Results({
             @Result(property = "id", column = "ID"),
             @Result(property = "processDefinitionId", column = "PROCESS_DEFINITION_ID"),
@@ -39,7 +39,7 @@ public interface CreationMapper {
             @Result(property = "state", column = "STATE_"),
             @Result(property = "createTime", column = "create_time"),
     })
-    List<ActCreation> find(String processInstanceId);
+    List<ActCreation> find();
 
     @Insert("insert into act_creation(PROCESS_DEFINITION_ID, PROCESS_INSTANCE_ID, PROPERTIES_TEXT, create_time) values(#{processDefinitionId}, #{processInstanceId}, #{propertiesText}, #{createTime})")
     int insert(ActCreation actCreation);

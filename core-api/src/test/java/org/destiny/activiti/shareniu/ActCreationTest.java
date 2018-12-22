@@ -35,7 +35,7 @@ public class ActCreationTest {
     public void testList() {
         ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) activitiRule.getProcessEngine().getProcessEngineConfiguration();
         SqlSession sqlSession = processEngineConfiguration.getSqlSessionFactory().openSession();
-        List<ActCreation> actCreationList = sqlSession.selectList("org.destiny.activiti.util.CreationMapper.find", null);
+        List<ActCreation> actCreationList = sqlSession.selectList("org.destiny.activiti.util.CreationMapper.find", "my-process:1:3");
         log.info("actCreationList: {}", JSON.toJSONString(actCreationList));
     }
 
