@@ -116,11 +116,11 @@ public class AddMulitInstanceTest {
     public void testAddMultiInst() {
         String taskId = "7504";
         Task task = activitiRule.getTaskService().createTaskQuery().taskId(taskId).singleResult();
-        Execution execution = activitiRule.getRuntimeService().createExecutionQuery().activityId(task.getExecutionId()).singleResult();
+        Execution execution = activitiRule.getRuntimeService().createExecutionQuery().executionId(task.getExecutionId()).singleResult();
         Map<String, Object> executionVariables = activitiRule.getRuntimeService().getVariables(execution.getId());
         log.info("executionVariables: {}", executionVariables);
         Map<String, Object> executionVariablesLocal = activitiRule.getRuntimeService().getVariablesLocal(execution.getId());
-        log.info("executionVariablesLocal: {}", executionVariables);
+        log.info("executionVariablesLocal: {}", executionVariablesLocal);
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("user", "destiny1");
         activitiRule.getManagementService().executeCommand(new AddMultiInstanceCmd(execution.getParentId(), execution.getActivityId(), variables));
