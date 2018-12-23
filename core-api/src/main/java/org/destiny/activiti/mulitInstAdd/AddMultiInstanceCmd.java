@@ -3,6 +3,7 @@ package org.destiny.activiti.mulitInstAdd;
 import org.activiti.bpmn.model.Activity;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.MultiInstanceLoopCharacteristics;
+import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.activiti.engine.impl.bpmn.behavior.ParallelMultiInstanceBehavior;
 import org.activiti.engine.impl.history.HistoryManager;
@@ -25,18 +26,18 @@ import java.util.Map;
  * @version 1.8
  * @since JDK 1.8.0_101
  */
-public class AddMulitInstanceCmd implements Command<Void>, Serializable {
+public class AddMultiInstanceCmd implements Command<Void>, Serializable {
 
     private final String NUMBER_OF_INSTANCES = "nrOfInstances";
     private final String NUMBER_OF_ACTIVE_INSTANCES = "nrOfActiveInstances";
     private final String NUMBER_OF_COMPLETED_INSTANCES = "nrOfCompletedInstances";
     private String collectionElementIndexVariable = "loopCounter";
 
-    private String parentExecutionId;
-    private String activityId;
+    private String parentExecutionId;       // 父执行对象的 id
+    private String activityId;              // 加签节点 id
     private Map<String, Object> variables;
 
-    public AddMulitInstanceCmd(String parentExecutionId, String activityId, Map<String, Object> variables) {
+    public AddMultiInstanceCmd(String parentExecutionId, String activityId, Map<String, Object> variables) {
         this.parentExecutionId = parentExecutionId;
         this.activityId = activityId;
         this.variables = variables;
@@ -79,5 +80,15 @@ public class AddMulitInstanceCmd implements Command<Void>, Serializable {
         behavior.getInnerActivityBehavior().execute(childExecution);
 
         return null;
+    }
+
+    private Integer getLoopVariable(DelegateExecution execution, String variablesName) {
+        Object value = execution.getVariableLocal(variablesName);
+        DelegateExecution parent = execution.getParent();
+        while (value == null && parent != null) {
+            value = parent.getVariableLocal(variablesName);
+            parent = parent.getParent();
+        }
+        return (value != null ? (Integer) value : 0);
     }
 }

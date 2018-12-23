@@ -4,13 +4,14 @@ import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
-import org.activiti.engine.test.Deployment;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.destiny.activiti.mulitInstAdd.AddMultiInstanceCmd;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -95,6 +96,34 @@ public class AddMulitInstanceTest {
         for (Task task : taskList) {
             log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
         }
+
+    }
+
+    @Test
+    public void testTaskList() {
+        List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
+        log.info("当前可操作的 task 数量: {}", taskList.size());
+        for (Task task : taskList) {
+            log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+            log.info("ProcessVariables: {}", task.getProcessVariables());
+            log.info("TaskLocalVariables: {}", task.getTaskLocalVariables());
+//            log.info();
+        }
+    }
+
+
+    @Test
+    public void testAddMultiInst() {
+        String taskId = "7504";
+        Task task = activitiRule.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+        Execution execution = activitiRule.getRuntimeService().createExecutionQuery().activityId(task.getExecutionId()).singleResult();
+        Map<String, Object> executionVariables = activitiRule.getRuntimeService().getVariables(execution.getId());
+        log.info("executionVariables: {}", executionVariables);
+        Map<String, Object> executionVariablesLocal = activitiRule.getRuntimeService().getVariablesLocal(execution.getId());
+        log.info("executionVariablesLocal: {}", executionVariables);
+        Map<String, Object> variables = Maps.newHashMap();
+        variables.put("user", "destiny1");
+        activitiRule.getManagementService().executeCommand(new AddMultiInstanceCmd(execution.getParentId(), execution.getActivityId(), variables));
     }
 
     private SequenceFlow createSequenceFlow(String from, String to, String name, String conditionExpression) {
