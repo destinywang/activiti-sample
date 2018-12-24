@@ -9,13 +9,15 @@
 
     <process id="my-process">
         <startEvent id="start"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="someTask" />
-        <userTask id="someTask" name="Activiti is awesome!" activiti:assignee="${user}">
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1" />
+        <userTask id="userTask1" name="Activiti is awesome!" activiti:assignee="${user}">
             <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${userList}" activiti:elementVariable="user">
-                <completionCondition>${nrOfCompletedInstances/nrOfInstances >= 0.6}</completionCondition>
+                <completionCondition>pass</completionCondition>
             </multiInstanceLoopCharacteristics>
         </userTask>
-        <sequenceFlow id="flow2" sourceRef="someTask" targetRef="end"/>
+        <sequenceFlow id="flow2" sourceRef="userTask1" targetRef="end"/>
+        <userTask id="userTask2" activiti:assignee="wk"/>
+        <sequenceFlow id="flow3" sourceRef="userTask2" targetRef="end"/>
         <endEvent id="end" />
     </process>
 
