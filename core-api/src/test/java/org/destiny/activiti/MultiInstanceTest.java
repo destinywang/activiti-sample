@@ -33,7 +33,7 @@ public class MultiInstanceTest {
     @Test
     public void testDeploy() {
         activitiRule.getRepositoryService().createDeployment()
-                .addClasspathResource("org/destiny/activiti/my-process.bpmn20-multi.bpmn20.xml")
+                .addClasspathResource("org/destiny/activiti/my-process-multi.bpmn20.xml")
                 .deploy();
 
         Map<String, Object> variables = Maps.newHashMap();
@@ -52,4 +52,11 @@ public class MultiInstanceTest {
 
     }
 
+    @Test
+    public void testComplete() {
+        String taskId = "7526";
+        Map<String, Object> variables = Maps.newHashMap();
+        variables.put("pass", true);
+        activitiRule.getTaskService().complete(taskId, variables);
+    }
 }
