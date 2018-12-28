@@ -2,12 +2,11 @@ package org.destiny.activiti.shareniu;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.activiti.engine.test.ActivitiRule;
 import org.apache.ibatis.session.SqlSession;
 import org.destiny.activiti.util.ActCreation;
-import org.destiny.activiti.util.CreationMapper;
+import org.destiny.activiti.mapper.CreationMapper;
 import org.destiny.activiti.util.TmpActivityModel;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class ActCreationTest {
     public void testList() {
         ProcessEngineConfigurationImpl processEngineConfiguration = (ProcessEngineConfigurationImpl) activitiRule.getProcessEngine().getProcessEngineConfiguration();
         SqlSession sqlSession = processEngineConfiguration.getSqlSessionFactory().openSession();
-        List<ActCreation> actCreationList = sqlSession.selectList("org.destiny.activiti.util.CreationMapper.find", "my-process:1:3");
+        List<ActCreation> actCreationList = sqlSession.selectList("org.destiny.activiti.mapper.CreationMapper.find", "my-process:1:3");
         log.info("actCreationList: {}", JSON.toJSONString(actCreationList));
     }
 
