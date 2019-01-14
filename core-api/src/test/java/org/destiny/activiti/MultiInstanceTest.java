@@ -55,7 +55,7 @@ public class MultiInstanceTest {
 
     @Test
     public void testComplete() {
-        String taskId = "7526";
+        String taskId = "29";
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("pass", true);
         activitiRule.getTaskService().complete(taskId, variables);
