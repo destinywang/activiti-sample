@@ -18,7 +18,7 @@
         <sequenceFlow id="flow2" sourceRef="userTask1" targetRef="userTask2"/>
         <userTask id="userTask2" activiti:assignee="wk"/>
         <sequenceFlow id="flow3" sourceRef="userTask2" targetRef="end"/>
-        <endEvent id="end" />
+        <endEvent id="end"/>
     </process>
 
 </definitions>
