@@ -2,6 +2,7 @@ package org.destiny.activiti;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
@@ -44,7 +45,7 @@ public class MultiInstanceTest {
 
     @Test
     public void testTaskList() {
-        String procInstId = "";
+        String procInstId = "4";
         List<Task> taskList = activitiRule.getTaskService().createTaskQuery().processInstanceId(procInstId).list();
         for (Task task : taskList) {
             log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
@@ -58,5 +59,15 @@ public class MultiInstanceTest {
         Map<String, Object> variables = Maps.newHashMap();
         variables.put("pass", true);
         activitiRule.getTaskService().complete(taskId, variables);
+    }
+
+    @Test
+    public void testHisList() {
+        List<HistoricTaskInstance> historicTaskInstanceList = activitiRule.getHistoryService().createHistoricTaskInstanceQuery()
+                .processInstanceId("4")
+                .list();
+        for (HistoricTaskInstance task : historicTaskInstanceList) {
+            log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
+        }
     }
 }

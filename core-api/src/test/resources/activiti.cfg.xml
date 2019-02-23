@@ -32,7 +32,8 @@
         <!--<property name="databaseType" value="mysql"/>-->
         <property name="customMybatisMappers">
             <set>
-                <value>org.destiny.activiti.util.CreationMapper</value>
+                <!--<value>org.destiny.activiti.mapper.CreationMapper</value>-->
+                <value>org.destiny.activiti.mapper.DeliveryHistoryMapper</value>
             </set>
         </property>
     </bean>

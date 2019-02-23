@@ -9,15 +9,9 @@
 
     <process id="my-process">
         <startEvent id="start"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1" />
-        <userTask id="userTask1" name="Activiti is awesome!" activiti:assignee="${user}">
-            <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${userList}" activiti:elementVariable="user">
-                <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
-            </multiInstanceLoopCharacteristics>
-        </userTask>
-        <sequenceFlow id="flow2" sourceRef="userTask1" targetRef="userTask2"/>
-        <userTask id="userTask2" activiti:assignee="wk"/>
-        <sequenceFlow id="flow3" sourceRef="userTask2" targetRef="end"/>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="serviceTask"/>
+        <serviceTask id="serviceTask" name="serviceTask" activiti:class="org.destiny.activiti.ServiceTask1" activiti:category="AUTO_PASS"/>
+        <sequenceFlow id="flow2" sourceRef="serviceTask" targetRef="end"/>
         <endEvent id="end"/>
     </process>
 

@@ -1,6 +1,7 @@
-package org.destiny.activiti.util;
+package org.destiny.activiti.mapper;
 
 import org.apache.ibatis.annotations.*;
+import org.destiny.activiti.util.ActCreation;
 
 import java.util.List;
 

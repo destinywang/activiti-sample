@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+
+    <process id="my-process">
+
+        <startEvent id="start"/>
+        <exclusiveGateway id="gateway1"/>
+        <endEvent id="reject" name="拒绝结束"/>
+        <endEvent id="pass" name="同意结束"/>
+
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="gateway1"/>
+        <sequenceFlow id="flow2" sourceRef="gateway1" targetRef="pass">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${days < 3}]]></conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow id="flow3" sourceRef="gateway1" targetRef="reject">
+            <conditionExpression xsi:type="tFormalExpression"><![CDATA[${days >= 3}]]></conditionExpression>
+        </sequenceFlow>
+    </process>
+
+</definitions>
