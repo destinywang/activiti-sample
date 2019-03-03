@@ -9,9 +9,10 @@
 
     <process id="my-process">
         <startEvent id="start"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1" />
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1"/>
         <userTask id="userTask1" name="Activiti is awesome!" activiti:assignee="${user}">
-            <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${userList}" activiti:elementVariable="user">
+            <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${userList}"
+                                              activiti:elementVariable="user">
                 <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>
             </multiInstanceLoopCharacteristics>
         </userTask>
