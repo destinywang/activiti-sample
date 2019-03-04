@@ -21,7 +21,7 @@ import org.junit.Test;
 public class DbIdTest {
 
     @Rule
-    public ActivitiRule activitiRule = new ActivitiRule("activiti.cfg.xml");
+    public ActivitiRule activitiRule = new ActivitiRule("activiti.cfg-mysql.xml");
 
     @Test
     public void testIdentity() {
