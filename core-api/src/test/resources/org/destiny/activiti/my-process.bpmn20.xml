@@ -10,11 +10,11 @@
     <process id="my-process">
 
         <startEvent id="start"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="someTask"/>
-
-        <userTask id="someTask" name="Activiti is awesome!" activiti:assignee="destiny"/>
-        <sequenceFlow id="flow2" sourceRef="someTask" targetRef="end"/>
-
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1"/>
+        <userTask id="userTask1" name="userTask1" activiti:assignee="destiny1"/>
+        <sequenceFlow id="flow2" sourceRef="userTask1" targetRef="userTask2"/>
+        <userTask id="userTask2" name="userTask2" activiti:assignee="destiny2"/>
+        <sequenceFlow id="flow3" sourceRef="userTask2" targetRef="end"/>
         <endEvent id="end"/>
 
     </process>
