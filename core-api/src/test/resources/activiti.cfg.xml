@@ -34,6 +34,7 @@
             <set>
                 <!--<value>org.destiny.activiti.mapper.CreationMapper</value>-->
                 <value>org.destiny.activiti.mapper.DeliveryHistoryMapper</value>
+                <value>org.destiny.activiti.addsign1.AddSignMapper</value>
             </set>
         </property>
     </bean>
