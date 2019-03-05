@@ -35,16 +35,16 @@ import java.util.List;
 public class AddSignService {
 
     /**
-     * @param procDefId
-     * @param procInstId
-     * @param processEngine
-     * @param taskModelList
-     * @param firstNodeId
-     * @param lastNodeId
-     * @param persistence
-     * @param onset
-     * @param taskId
-     * @param targetNodeId
+     * @param procDefId     流程定义 ID
+     * @param procInstId    流程实例 ID
+     * @param processEngine 流程引擎
+     * @param taskModelList 加签节点列表
+     * @param firstNodeId   加签开始节点 ID
+     * @param lastNodeId    加签结束节点 ID
+     * @param persistence   是否持久化
+     * @param onset         是否需要立即跳转
+     * @param taskId        taskID
+     * @param targetNodeId  目标节点
      */
     public void addUserTask(String procDefId, String procInstId, ProcessEngine processEngine, List<TaskModel> taskModelList,
                             String firstNodeId, String lastNodeId, boolean persistence, boolean onset, String taskId, String targetNodeId) {

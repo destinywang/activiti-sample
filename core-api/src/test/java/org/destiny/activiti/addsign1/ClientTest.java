@@ -1,5 +1,6 @@
 package org.destiny.activiti.addsign1;
 
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.activiti.bpmn.model.Process;
 import org.activiti.bpmn.model.SequenceFlow;
@@ -16,6 +17,8 @@ import org.activiti.engine.test.ActivitiRule;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.destiny.activiti.addsign1.model.AddSign;
+import org.destiny.activiti.addsign1.model.TaskModel;
+import org.destiny.activiti.addsign1.util.ActivityUtils;
 import org.destiny.activiti.cmd.GetProcessCmd;
 import org.destiny.activiti.cmd.GetProcessDefinitionCacheEntryCmd;
 import org.destiny.activiti.cmd.JumpCmd;
@@ -110,5 +113,26 @@ public class ClientTest {
         List<AddSign> addSigns = mapper.find(null);
         log.info("addSigns: {}", addSigns);
         sqlSession.close();
+    }
+
+    @Test
+    public void addSignTest() {
+        String taskId = "5008";
+        TaskEntity taskEntity = (TaskEntity) activitiRule.getTaskService().createTaskQuery()
+                .taskId(taskId)
+                .singleResult();
+        log.info("taskEntity: {}", taskEntity);
+        String firstNodeId = "destinyA";
+        String lastNodeId = "destinyB";
+        List<TaskModel> taskModelList = Lists.newArrayList();
+
+        TaskModel taskModel1 = ActivityUtils.buildTaskModel("destinyD", "destinyD", "destiny-d");
+        TaskModel taskModel2 = ActivityUtils.buildTaskModel("destinyD", "destinyD", "destiny-d");
+
+        taskModelList.add(taskModel1);
+        taskModelList.add(taskModel2);
+
+        AddSignService addSignService = new AddSignService();
+        addSignService.addUserTask(taskEntity.getProcessDefinitionId(), taskEntity.getProcessInstanceId(), activitiRule.getProcessEngine(), taskModelList, firstNodeId, lastNodeId, true, true, taskEntity.getId(), taskModelList.get(0).getId());
     }
 }
