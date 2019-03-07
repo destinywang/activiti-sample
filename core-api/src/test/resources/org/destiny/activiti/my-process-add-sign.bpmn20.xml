@@ -10,9 +10,9 @@
     <process id="my-process">
 
         <startEvent id="start"/>
-        <userTask id="destinyA" name="destinyA" activiti:assignee="destiny-a"/>
-        <userTask id="destinyB" name="destinyB" activiti:assignee="destiny-b"/>
-        <userTask id="destinyC" name="destinyC" activiti:assignee="destiny-c"/>
+        <userTask id="destinyA" name="destinyA" activiti:assignee="destinyA"/>
+        <userTask id="destinyB" name="destinyB" activiti:assignee="destinyB"/>
+        <userTask id="destinyC" name="destinyC" activiti:assignee="destinyC"/>
         <endEvent id="end"/>
 
         <sequenceFlow sourceRef="start" targetRef="destinyA"/>

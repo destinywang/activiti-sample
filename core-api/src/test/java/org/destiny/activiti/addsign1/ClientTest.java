@@ -58,7 +58,7 @@ public class ClientTest {
     public void complete() {
 //        Map<String, Object> map = Maps.newHashMap();
 //        map.put("condition", 1);
-        activitiRule.getTaskService().complete("2502");
+        activitiRule.getTaskService().complete("20002");
     }
 
     public void testAddOneTask(String taskId, String targetActivityId) {
@@ -115,9 +115,12 @@ public class ClientTest {
         sqlSession.close();
     }
 
+    /**
+     *
+     */
     @Test
     public void addSignTest() {
-        String taskId = "5008";
+        String taskId = "17508";
         TaskEntity taskEntity = (TaskEntity) activitiRule.getTaskService().createTaskQuery()
                 .taskId(taskId)
                 .singleResult();
@@ -133,6 +136,8 @@ public class ClientTest {
         taskModelList.add(taskModel2);
 
         AddSignService addSignService = new AddSignService();
-        addSignService.addUserTask(taskEntity.getProcessDefinitionId(), taskEntity.getProcessInstanceId(), activitiRule.getProcessEngine(), taskModelList, firstNodeId, lastNodeId, true, true, taskEntity.getId(), taskModelList.get(0).getId());
+        addSignService.addUserTask(taskEntity.getProcessDefinitionId(), taskEntity.getProcessInstanceId(),
+                activitiRule.getProcessEngine(), taskModelList, firstNodeId, lastNodeId, true, true,
+                taskEntity.getId(), taskModelList.get(0).getId());
     }
 }

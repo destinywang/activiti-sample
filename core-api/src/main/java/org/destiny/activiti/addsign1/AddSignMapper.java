@@ -31,6 +31,6 @@ public interface AddSignMapper {
     })
     List<AddSign> find(String processInstanceId);
 
-    @Insert("insert into act_creation(PROCESS_DEFINITION_ID_, PROCESS_INSTANCE_ID_, PROPERTIES_TEXT_, CREATE_TIME_) values(#{processDefinitionId}, #{processInstanceId}, #{propertiesText}, #{createTime})")
+    @Insert("insert into ACT_ADD_SIGN(PROCESS_DEFINITION_ID_, PROCESS_INSTANCE_ID_, PROPERTIES_TEXT_, CREATE_TIME_) values(#{processDefinitionId}, #{processInstanceId}, #{propertiesText}, #{createTime})")
     int insert(AddSign addSign);
 }

@@ -10,12 +10,15 @@ import org.activiti.engine.ManagementService;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.persistence.deploy.DeploymentManager;
 import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionCacheEntry;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.ibatis.session.SqlSession;
 import org.destiny.activiti.addsign1.model.AddSign;
 import org.destiny.activiti.addsign1.model.TaskModel;
 import org.destiny.activiti.addsign1.model.TmpActivityModel;
 import org.destiny.activiti.addsign1.util.ActivityUtils;
+import org.destiny.activiti.cmd.GetProcessCmd;
 import org.destiny.activiti.cmd.GetProcessDefinitionCacheEntryCmd;
 import org.destiny.activiti.cmd.JumpCmd;
 
@@ -49,8 +52,9 @@ public class AddSignService {
     public void addUserTask(String procDefId, String procInstId, ProcessEngine processEngine, List<TaskModel> taskModelList,
                             String firstNodeId, String lastNodeId, boolean persistence, boolean onset, String taskId, String targetNodeId) {
         ManagementService managementService = processEngine.getManagementService();
-        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(procDefId));
+        managementService.executeCommand(new GetProcessCmd(procDefId));
         // 通过缓存获取
+        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(procDefId));
         Process process = processDefinitionCacheEntry.getProcess();
         // 批量生成任务, 循环遍历 TaskModel
         List<UserTask> userTaskList = Lists.newArrayList();
@@ -70,12 +74,12 @@ public class AddSignService {
                 sequenceFlow.setTargetRef(lastNodeId);
             } else {
                 // 如果不是最后一个
-                ActivityUtils.buildSequenceFlow(userTask.getId() + "-->" + userTaskList.get(i + 1).getId(),
+                sequenceFlow = ActivityUtils.buildSequenceFlow(userTask.getId() + "-->" + userTaskList.get(i + 1).getId(),
                         userTask.getId() + "-->" + userTaskList.get(i + 1).getId(),
                         userTask.getId(), userTaskList.get(i + 1).getId());
                 sequenceFlow.setTargetFlowElement(userTaskList.get(i + 1));
             }
-            userTask.setOutgoingFlows(Arrays.asList());
+            userTask.setOutgoingFlows(Arrays.asList(sequenceFlow));
             process.addFlowElement(sequenceFlow);
         }
         log.info("process: {}", process);
@@ -119,7 +123,8 @@ public class AddSignService {
         addSign.setProcessInstanceId(procInstId);
         addSign.setPropertiesText(JSON.toJSONString(tmpActivityModel));
         addSign.setCreateTime(System.currentTimeMillis());
-        mapper.insert(addSign);
+        int insert = mapper.insert(addSign);
+        log.info("insert 结果: {}", insert);
 
         sqlSession.commit();
         sqlSession.close();
