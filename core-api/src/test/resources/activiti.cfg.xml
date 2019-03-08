@@ -37,6 +37,9 @@
                 <value>org.destiny.activiti.addsign1.AddSignMapper</value>
             </set>
         </property>
+        <property name="processEngineLifecycleListener">
+            <bean class="org.destiny.activiti.addsign1.AddSignProcessEngineLifecycleListener"/>
+        </property>
     </bean>
 
     <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">

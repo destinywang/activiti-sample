@@ -19,7 +19,7 @@ import java.util.List;
  */
 public interface AddSignMapper {
 
-    @Select("select * from ACT_ADD_SIGN where STATE_ = 0 AND PROCESS_INSTANCE_ID_ = #{processInstanceId}")
+    @Select("select * from ACT_ADD_SIGN where STATE_ = 0")
     @Results({
             @Result(property = "id", column = "ID_"),
             @Result(property = "processDefinitionId", column = "PROCESS_DEFINITION_ID_"),
@@ -29,8 +29,8 @@ public interface AddSignMapper {
             @Result(property = "state", column = "STATE_"),
             @Result(property = "createTime", column = "CREATE_TIME_"),
     })
-    List<AddSign> find(String processInstanceId);
+    List<AddSign> find();
 
-    @Insert("insert into ACT_ADD_SIGN(PROCESS_DEFINITION_ID_, PROCESS_INSTANCE_ID_, PROPERTIES_TEXT_, CREATE_TIME_) values(#{processDefinitionId}, #{processInstanceId}, #{propertiesText}, #{createTime})")
+    @Insert("insert into ACT_ADD_SIGN(PROCESS_DEFINITION_ID_, PROCESS_INSTANCE_ID_, PROPERTIES_TEXT_, STATE_, CREATE_TIME_) values(#{processDefinitionId}, #{processInstanceId}, #{propertiesText}, 0, #{createTime})")
     int insert(AddSign addSign);
 }

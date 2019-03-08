@@ -58,10 +58,13 @@ public class ClientTest {
     public void complete() {
 //        Map<String, Object> map = Maps.newHashMap();
 //        map.put("condition", 1);
-        activitiRule.getTaskService().complete("20002");
+        activitiRule.getTaskService().complete("40002");
     }
 
-    public void testAddOneTask(String taskId, String targetActivityId) {
+    @Test
+    public void testAddOneTask() {
+        String taskId = "22508";
+        String targetActivityId = "destinyB";
         // 获取当前的任务
         TaskEntity taskEntity = (TaskEntity) activitiRule.getTaskService().createTaskQuery().taskId(taskId).singleResult();
         log.info("taskEntity: {}", taskEntity);
@@ -110,7 +113,7 @@ public class ClientTest {
         SqlSessionFactory sqlSessionFactory = processEngineConfiguration.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession();
         AddSignMapper mapper = sqlSession.getMapper(AddSignMapper.class);
-        List<AddSign> addSigns = mapper.find(null);
+        List<AddSign> addSigns = mapper.find();
         log.info("addSigns: {}", addSigns);
         sqlSession.close();
     }
@@ -120,7 +123,7 @@ public class ClientTest {
      */
     @Test
     public void addSignTest() {
-        String taskId = "17508";
+        String taskId = "37508";
         TaskEntity taskEntity = (TaskEntity) activitiRule.getTaskService().createTaskQuery()
                 .taskId(taskId)
                 .singleResult();
@@ -130,7 +133,7 @@ public class ClientTest {
         List<TaskModel> taskModelList = Lists.newArrayList();
 
         TaskModel taskModel1 = ActivityUtils.buildTaskModel("destinyD", "destinyD", "destiny-d");
-        TaskModel taskModel2 = ActivityUtils.buildTaskModel("destinyD", "destinyD", "destiny-d");
+        TaskModel taskModel2 = ActivityUtils.buildTaskModel("destinyE", "destinyE", "destiny-e");
 
         taskModelList.add(taskModel1);
         taskModelList.add(taskModel2);

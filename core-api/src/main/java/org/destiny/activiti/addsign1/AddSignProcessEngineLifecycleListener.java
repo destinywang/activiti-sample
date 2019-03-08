@@ -28,7 +28,7 @@ public class AddSignProcessEngineLifecycleListener implements ProcessEngineLifec
         SqlSessionFactory sqlSessionFactory = processEngineConfiguration.getSqlSessionFactory();
         SqlSession sqlSession = sqlSessionFactory.openSession();
         AddSignMapper addSignMapper = sqlSession.getMapper(AddSignMapper.class);
-        List<AddSign> addSignList = addSignMapper.find("");
+        List<AddSign> addSignList = addSignMapper.find();
         for (AddSign addSign : addSignList) {
             String processDefinitionId = addSign.getProcessDefinitionId();
             String processInstanceId = addSign.getProcessInstanceId();
