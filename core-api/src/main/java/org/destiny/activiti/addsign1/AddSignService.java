@@ -24,6 +24,7 @@ import org.destiny.activiti.cmd.JumpCmd;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author wangkang
@@ -112,11 +113,7 @@ public class AddSignService {
         tmpActivityModel.setFirstId(firstNodeId);
         tmpActivityModel.setLastId(lastNodeId);
         tmpActivityModel.setActivityList(taskModelList);
-        StringBuilder stringBuilder = new StringBuilder();
-        for (TaskModel taskModel : taskModelList) {
-            stringBuilder.append(taskModel.getId() + ",");
-        }
-        tmpActivityModel.setActivityIds(stringBuilder.toString());
+        tmpActivityModel.setActivityIds(JSON.toJSONString(taskModelList.stream().map(TaskModel::getId).collect(Collectors.toList())));
 
         AddSign addSign = new AddSign();
         addSign.setProcessDefinitionId(procDefId);
