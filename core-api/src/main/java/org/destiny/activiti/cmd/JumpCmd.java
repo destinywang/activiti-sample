@@ -3,6 +3,7 @@ package org.destiny.activiti.cmd;
 import lombok.AllArgsConstructor;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Process;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.ActivitiEngineAgenda;
 import org.activiti.engine.impl.history.HistoryManager;
 import org.activiti.engine.impl.interceptor.Command;
@@ -45,6 +46,13 @@ public class JumpCmd implements Command<Void> {
         FlowElement flowElement = process.getFlowElement(targetNodeId);
         if (flowElement == null) {
             throw new RuntimeException("目标节点不存在");
+        }
+        // 如果该节点是多实例 userTask
+        if (flowElement instanceof UserTask && ((UserTask) flowElement).getLoopCharacteristics() != null) {
+            String name = flowElement.getName();
+            String[] split = name.split(":");
+            Integer ver = Integer.valueOf(split[1]);
+            flowElement.setName(split[0] + ":" + (ver + 1));
         }
         // 将历史活动表更新
         historyManager.recordActivityEnd(executionEntity, "jump");
