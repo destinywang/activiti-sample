@@ -55,7 +55,7 @@ public class AddSignService {
         ManagementService managementService = processEngine.getManagementService();
         managementService.executeCommand(new GetProcessCmd(procDefId));
         // 通过缓存获取
-        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(procDefId));
+        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(procDefId, processEngine));
         Process process = processDefinitionCacheEntry.getProcess();
         // 批量生成任务, 循环遍历 TaskModel
         List<UserTask> userTaskList = Lists.newArrayList();

@@ -104,13 +104,13 @@ public class CountSignTest {
         process.addFlowElement(sequenceFlow);
 
         // 更新缓存
-        ProcessDefinitionCacheEntry oldProcessDefinitionCacheEntry = activitiRule.getManagementService().executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId));
-        log.info("oldProcessDefinitionCacheEntry getProcess: {}", ToStringBuilder.reflectionToString(oldProcessDefinitionCacheEntry.getProcess(), ToStringStyle.JSON_STYLE));
-
-        oldProcessDefinitionCacheEntry.setProcess(process);
-
-        ProcessDefinitionCacheEntry newProcessDefinitionCacheEntry = activitiRule.getManagementService().executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId));
-        log.info("newProcessDefinitionCacheEntry getProcess: {}", ToStringBuilder.reflectionToString(newProcessDefinitionCacheEntry.getProcess(), ToStringStyle.JSON_STYLE));
+//        ProcessDefinitionCacheEntry oldProcessDefinitionCacheEntry = activitiRule.getManagementService().executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId));
+//        log.info("oldProcessDefinitionCacheEntry getProcess: {}", ToStringBuilder.reflectionToString(oldProcessDefinitionCacheEntry.getProcess(), ToStringStyle.JSON_STYLE));
+//
+//        oldProcessDefinitionCacheEntry.setProcess(process);
+//
+//        ProcessDefinitionCacheEntry newProcessDefinitionCacheEntry = activitiRule.getManagementService().executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId));
+//        log.info("newProcessDefinitionCacheEntry getProcess: {}", ToStringBuilder.reflectionToString(newProcessDefinitionCacheEntry.getProcess(), ToStringStyle.JSON_STYLE));
 
         // 执行自由跳转命令
         activitiRule.getManagementService().executeCommand(new JumpCmd(taskId, userTask.getId()));
