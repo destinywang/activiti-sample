@@ -66,7 +66,7 @@ public class AddNode {
         managementService.executeCommand(new GetProcessCmd(processDefinitionId));
 
         // 获取缓存
-        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId));
+        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId, processEngine));
         Process process = processDefinitionCacheEntry.getProcess();
         List<UserTask> userTaskList = Lists.newArrayList();
         // 批量生成任务

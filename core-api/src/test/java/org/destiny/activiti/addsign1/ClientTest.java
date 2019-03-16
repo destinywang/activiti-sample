@@ -9,10 +9,12 @@ import org.activiti.engine.ManagementService;
 import org.activiti.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.activiti.engine.impl.bpmn.parser.factory.ActivityBehaviorFactory;
 import org.activiti.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.activiti.engine.impl.cmd.CompleteTaskCmd;
 import org.activiti.engine.impl.persistence.deploy.ProcessDefinitionCacheEntry;
 import org.activiti.engine.impl.persistence.entity.TaskEntity;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -58,12 +60,14 @@ public class ClientTest {
     public void complete() {
 //        Map<String, Object> map = Maps.newHashMap();
 //        map.put("condition", 1);
-        activitiRule.getTaskService().complete("40002");
+        String taskId = "82502";
+        activitiRule.getTaskService().complete(taskId);
+//        activitiRule.getManagementService().executeCommand(new AddSignCompleteCmd(taskId, null, activitiRule.getProcessEngine()));
     }
 
     @Test
     public void testAddOneTask() {
-        String taskId = "22508";
+        String taskId = "60008";
         String targetActivityId = "destinyB";
         // 获取当前的任务
         TaskEntity taskEntity = (TaskEntity) activitiRule.getTaskService().createTaskQuery().taskId(taskId).singleResult();
@@ -91,10 +95,10 @@ public class ClientTest {
         process.addFlowElement(sequenceFlow);
 
         // 更新缓存
-        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId));
+        ProcessDefinitionCacheEntry processDefinitionCacheEntry = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId, activitiRule.getProcessEngine()));
         processDefinitionCacheEntry.setProcess(process);
-        Process processCache = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId)).getProcess();
-
+        Process processCache = managementService.executeCommand(new GetProcessDefinitionCacheEntryCmd(processDefinitionId, activitiRule.getProcessEngine())).getProcess();
+//
         log.info("processCache: {}", processCache);
 
         // 跳转
@@ -123,7 +127,7 @@ public class ClientTest {
      */
     @Test
     public void addSignTest() {
-        String taskId = "37508";
+        String taskId = "80008";
         TaskEntity taskEntity = (TaskEntity) activitiRule.getTaskService().createTaskQuery()
                 .taskId(taskId)
                 .singleResult();
