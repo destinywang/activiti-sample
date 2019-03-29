@@ -10,15 +10,16 @@
     <process id="multi-jump">
 
         <startEvent id="start"/>
-        <userTask id="userTask1" name="userTask1:1" activiti:assignee="${user}">
+        <userTask id="userTask1" activiti:assignee="user1"/>
+        <sequenceFlow sourceRef="start" targetRef="userTask1"/>
+        <sequenceFlow sourceRef="userTask1" targetRef="userTask2"/>
+        <sequenceFlow sourceRef="userTask2" targetRef="end"/>
+        <userTask id="userTask2" name="userTask1:1" activiti:assignee="${user}">
             <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${userList}" activiti:elementVariable="user">
                 <completionCondition>${nrOfCompletedInstances >= 1}</completionCondition>
             </multiInstanceLoopCharacteristics>
         </userTask>
-        <userTask id="userTask2" name="userTask2:1" activiti:assignee="user2"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1"/>
-        <sequenceFlow id="flow2" sourceRef="userTask1" targetRef="userTask2"/>
-        <sequenceFlow id="flow3" sourceRef="userTask2" targetRef="end"/>
+
         <endEvent id="end"/>
 
     </process>

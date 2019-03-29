@@ -52,11 +52,16 @@ public class MultiJumpTest {
 
     @Test
     public void testComplete() {
-        activitiRule.getTaskService().complete("52523");
+        activitiRule.getTaskService().complete("132517");
     }
+
+//    @Test
+//    public void testJump() {
+//        activitiRule.getManagementService().executeCommand(new JumpCmd("55002", "userTask1"));
+//    }
 
     @Test
     public void testJump() {
-        activitiRule.getManagementService().executeCommand(new JumpCmd("55002", "userTask1"));
+        activitiRule.getManagementService().executeCommand(new JumpCmd("132514", "userTask1"));
     }
 }
