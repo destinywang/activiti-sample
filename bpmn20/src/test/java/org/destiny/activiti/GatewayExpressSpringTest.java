@@ -1,12 +1,16 @@
 package org.destiny.activiti;
 
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.bpmn.converter.BpmnXMLConverter;
 import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.engine.test.ActivitiRule;
+import org.activiti.validation.ProcessValidator;
+import org.activiti.validation.ProcessValidatorFactory;
+import org.activiti.validation.ValidationError;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Assert;
@@ -17,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -133,7 +138,7 @@ public class GatewayExpressSpringTest {
     }
 
     @Test
-    public void testExclusionGatewayModel() {
+    public void testBpmnModel() throws UnsupportedEncodingException {
         BpmnModel bpmnModel = new BpmnModel();
         Process process = new Process();
         process.setId("my-process");
@@ -167,34 +172,13 @@ public class GatewayExpressSpringTest {
 
         bpmnModel.addProcess(process);
 
-        Deployment deployment = activitiRule.getRepositoryService().createDeployment()
-                .addBpmnModel("bpmn", bpmnModel)
-                .deploy();
+        byte[] bytes = new BpmnXMLConverter().convertToXML(bpmnModel);
+        String s = new String(bytes, "utf-8");
+        log.info(s);
 
-        log.info("deployment: {}", ToStringBuilder.reflectionToString(deployment, ToStringStyle.JSON_STYLE));
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("usersBean", usersBean);
-        map.put("name", "wk");
-
-        ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process", map);
-        log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
-
-        List<Task> taskList = activitiRule.getTaskService().createTaskQuery().list();
-        log.info("当前 taskList 数量: {}", taskList.size());
-
-        for (Task task : taskList) {
-            log.info("task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
-        }
-
-        activitiRule.getTaskService().complete(taskList.get(0).getId());
-        log.info("其中一个节点完成审批");
-
-        taskList = activitiRule.getTaskService().createTaskQuery().list();
-        log.info("第一个节点审批完成后 taskList 数量: {}", taskList.size());
-
-        for (Task task : taskList) {
-            log.info("第一个节点审批完成后 task: {}", ToStringBuilder.reflectionToString(task, ToStringStyle.JSON_STYLE));
-        }
+        ProcessValidatorFactory processValidatorFactory = new ProcessValidatorFactory();
+        ProcessValidator defaultProcessValidator = processValidatorFactory.createDefaultProcessValidator();
+        List<ValidationError> validate = defaultProcessValidator.validate(bpmnModel);
+        log.info("validate: {}", validate);
     }
 }
