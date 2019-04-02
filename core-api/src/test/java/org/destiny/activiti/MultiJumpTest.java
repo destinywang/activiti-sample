@@ -37,7 +37,8 @@ public class MultiJumpTest {
         log.info("deploy: {}", deploy);
 
         Map<String, Object> map = Maps.newHashMap();
-        map.put("userList", Arrays.asList("destiny", "freedom", "justice"));
+        map.put("userList1", Arrays.asList("destiny1", "freedom1", "justice1"));
+        map.put("userList2", Arrays.asList("destiny2", "freedom2", "justice2"));
         ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("multi-jump", map);
         log.info("processInstance: {}", processInstance);
     }
@@ -52,7 +53,7 @@ public class MultiJumpTest {
 
     @Test
     public void testComplete() {
-        activitiRule.getTaskService().complete("132517");
+        activitiRule.getTaskService().complete("152526");
     }
 
 //    @Test
@@ -62,6 +63,6 @@ public class MultiJumpTest {
 
     @Test
     public void testJump() {
-        activitiRule.getManagementService().executeCommand(new JumpCmd("132514", "userTask1"));
+        activitiRule.getManagementService().executeCommand(new JumpCmd("155011", "task1"));
     }
 }
