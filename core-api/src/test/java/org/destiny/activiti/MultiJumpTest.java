@@ -2,6 +2,8 @@ package org.destiny.activiti;
 
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.test.ActivitiRule;
@@ -55,11 +57,6 @@ public class MultiJumpTest {
     public void testComplete() {
         activitiRule.getTaskService().complete("152526");
     }
-
-//    @Test
-//    public void testJump() {
-//        activitiRule.getManagementService().executeCommand(new JumpCmd("55002", "userTask1"));
-//    }
 
     @Test
     public void testJump() {
