@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
+             expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+
+    <process id="list-condition">
+
+        <startEvent id="start"/>
+        <userTask id="userTask1" activiti:assignee="user1"/>
+        <exclusiveGateway id="gateway1"/>
+        <userTask id="userTask2" activiti:assignee="user2"/>
+        <userTask id="userTask3" activiti:assignee="user3"/>
+
+        <sequenceFlow sourceRef="start" targetRef="userTask1"/>
+        <sequenceFlow sourceRef="userTask1" targetRef="gateway1"/>
+        <sequenceFlow sourceRef="gateway1" targetRef="userTask2">
+            <conditionExpression>${list.contains('wk4')}</conditionExpression>
+        </sequenceFlow>
+        <sequenceFlow sourceRef="gateway1" targetRef="userTask3"/>
+        <sequenceFlow sourceRef="userTask2" targetRef="end"/>
+        <sequenceFlow sourceRef="userTask3" targetRef="end"/>
+        <endEvent id="end"/>
+
+    </process>
+
+</definitions>

@@ -11,6 +11,9 @@
         <startEvent id="start"/>
         <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1"/>
         <userTask id="userTask1" name="Activiti is awesome!" activiti:assignee="${user}">
+            <extensionElements>
+                <activiti:executionListener event="end" class="org.destiny.activiti.listener.NewExecutionListener"/>
+            </extensionElements>
             <multiInstanceLoopCharacteristics isSequential="false" activiti:collection="${userList}"
                                               activiti:elementVariable="user">
                 <completionCondition>${nrOfCompletedInstances == nrOfInstances}</completionCondition>

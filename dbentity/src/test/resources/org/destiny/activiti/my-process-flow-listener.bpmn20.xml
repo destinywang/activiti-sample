@@ -9,13 +9,13 @@
 
     <process id="my-process" activiti:candidateStarterUsers="a,b,c,d">
         <extensionElements>
-            <activiti:executionListener event="start" class="org.destiny.activiti.listener.MyExecutionListener"/>
-            <activiti:executionListener event="end" class="org.destiny.activiti.listener.MyExecutionListener"/>
+            <activiti:executionListener event="start" class="org.destiny.activiti.listener.NewExecutionListener"/>
+            <activiti:executionListener event="end" class="org.destiny.activiti.listener.NewExecutionListener"/>
         </extensionElements>
         <startEvent id="start" name="start"/>
         <sequenceFlow id="flow1" name="flow1" sourceRef="start" targetRef="userTask1">
             <extensionElements>
-                <activiti:executionListener event="take" class="org.destiny.activiti.listener.MyExecutionListener"/>
+                <activiti:executionListener event="take" class="org.destiny.activiti.listener.NewExecutionListener"/>
             </extensionElements>
         </sequenceFlow>
         <userTask id="userTask1" name="User Task"/>

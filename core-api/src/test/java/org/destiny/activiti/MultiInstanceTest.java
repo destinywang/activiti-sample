@@ -38,9 +38,9 @@ public class MultiInstanceTest {
                 .deploy();
 
         Map<String, Object> variables = Maps.newHashMap();
-        variables.put("userList", Arrays.asList("wk1", "wk2", "wk3"));
+        variables.put("userList", Arrays.asList("wk1", "wk2"));
         ProcessInstance processInstance = activitiRule.getRuntimeService().startProcessInstanceByKey("my-process", variables);
-        log.info("processInstance: {}", ToStringBuilder.reflectionToString(processInstance, ToStringStyle.JSON_STYLE));
+        log.info("processInstance: {}", processInstance);
     }
 
     @Test
@@ -55,10 +55,10 @@ public class MultiInstanceTest {
 
     @Test
     public void testComplete() {
-        String taskId = "29";
-        Map<String, Object> variables = Maps.newHashMap();
-        variables.put("pass", true);
-        activitiRule.getTaskService().complete(taskId, variables);
+        String taskId = "187523";
+//        Map<String, Object> variables = Maps.newHashMap();
+//        variables.put("pass", true);
+        activitiRule.getTaskService().complete(taskId);
     }
 
     @Test

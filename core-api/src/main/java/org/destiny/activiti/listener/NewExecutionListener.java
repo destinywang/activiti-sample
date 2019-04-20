@@ -19,10 +19,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * @since JDK 1.8.0_101
  */
 @Slf4j
-public class MyExecutionListener implements ExecutionListener{
+public class NewExecutionListener implements ExecutionListener, TaskListener {
     @Override
     public void notify(DelegateExecution execution) {
         String eventName = execution.getEventName();
         log.info("eventName: [{}]", ToStringBuilder.reflectionToString(execution, ToStringStyle.JSON_STYLE));
+    }
+
+    @Override
+    public void notify(DelegateTask delegateTask) {
+        log.info("delegateTask name: [{}]", delegateTask.getEventName());
     }
 }
