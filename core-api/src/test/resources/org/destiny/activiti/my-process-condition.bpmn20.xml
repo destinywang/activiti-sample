@@ -7,17 +7,17 @@
              expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
     <process id="my-process">
         <startEvent id="start"/>
-        <userTask id="userTask1" name="userTask1" activiti:assignee="destiny1"/>
-        <userTask id="userTask2" name="userTask2" activiti:assignee="destiny2"/>
-        <userTask id="userTask3" name="userTask3" activiti:assignee="destiny3"/>
+        <userTask id="userTask1" name="userTask1" activiti:assignee="user1"/>
+        <userTask id="userTask2" name="userTask2" activiti:assignee="user2"/>
+        <userTask id="userTask3" name="userTask3" activiti:assignee="user3"/>
         <endEvent id="end1"/>
         <endEvent id="end2"/>
         <sequenceFlow sourceRef="start" targetRef="userTask1"/>
         <sequenceFlow sourceRef="userTask1" targetRef="userTask2">
-            <conditionExpression>${condition==1}</conditionExpression>
+            <conditionExpression>${内容==1}</conditionExpression>
         </sequenceFlow>
         <sequenceFlow sourceRef="userTask1" targetRef="userTask3">
-            <conditionExpression>${condition==2}</conditionExpression>
+            <conditionExpression>${内容==2}</conditionExpression>
         </sequenceFlow>
         <sequenceFlow sourceRef="userTask2" targetRef="end1"/>
         <sequenceFlow sourceRef="userTask3" targetRef="end2"/>

@@ -143,6 +143,8 @@ public class RepositoryServiceTest {
         // 1. Build up the model from scratch
         BpmnModel model = new BpmnModel();
         Process process = new Process();
+
+
         model.addProcess(process);
         process.setId("my-process1");
 
